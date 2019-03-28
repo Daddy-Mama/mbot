@@ -14,25 +14,24 @@ import java.util.List;
 import static com.example.demo.commands.Commands.START;
 
 @Service
-public class MainMenuService extends BaseService implements IMainMenuService {
-    private ReplyKeyboardMarkup replyKeyboardMarkup = new ReplyKeyboardMarkup();
+public class MainMenuService extends BaseService{
+
 
     @Autowired
     public MainMenuService() {
         allowableCommands = new ArrayList<>();
-        allowableCommands.add(START);
+//        allowableCommands.add(START);
     }
 
 
-    public void parseMessage(Update update) {
-        String message = update.getMessage().getText();
+    public String parseMessage(String message) {
+        return message.split(" ")[0];
 
     }
 
     @Override
-    public SendMessage executeCommand(String command) {
-        assert (hasCommand(command));
-        super.executeCommand(command);
+    public SendMessage executeCommand(Update update) {
+
     }
 
 

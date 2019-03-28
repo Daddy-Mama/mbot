@@ -22,10 +22,10 @@ import java.util.stream.Collectors;
 @Component
 public class TranslatorService implements ITranslatorService {
     private final static Logger logger = LogManager.getLogger();
-    private final List<IBaseService> listOfServices;
+    private final List<BaseService> listOfServices;
 
     @Autowired
-    public TranslatorService(IMainMenuService mainMenuService) {
+    public TranslatorService(MainMenuService mainMenuService) {
         this.listOfServices = new ArrayList<>();
         this.listOfServices.add(mainMenuService);
     }
@@ -33,10 +33,10 @@ public class TranslatorService implements ITranslatorService {
     public SendMessage executeCommand(Update update) {
         User user = update.getMessage().getFrom();
         logger.info("New update received: " + user.getId() + " " + user.getUserName());
-        String command = parseMessage(update.getMessage().getText());
+        //Resolve chatId and decide which service work with this
 
         List<SendMessage> sendMessages = listOfServices.stream()
-                                                       .map(x -> x.executeCommand(command))
+                                                       .map(x -> x.executeCommand(update))
                                                        .collect(Collectors.toList());
 
         return sendMessages.get(0);

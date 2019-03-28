@@ -3,16 +3,19 @@ package com.example.demo.commands;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboardMarkup;
 
-public class BaseReplyMessage {
+public class Command {
     protected final String name;
     protected String text;
     protected ReplyKeyboardMarkup replyKeyboardMarkup;
     protected SendMessage sendMessage;
 
 
-    public BaseReplyMessage(String name) {
+    public Command(String name) {
         this.name = name;
         this.replyKeyboardMarkup = new ReplyKeyboardMarkup();
+        replyKeyboardMarkup.setSelective(true);
+        replyKeyboardMarkup.setResizeKeyboard(true);
+        replyKeyboardMarkup.setOneTimeKeyboard(false);
         this.sendMessage = new SendMessage();
     }
 
@@ -44,10 +47,14 @@ public class BaseReplyMessage {
         return name;
     }
 
-    public SendMessage execute(){
-        //Execute this command and return result SendMessage;
-    }
+    public SendMessage execute() {
 
+        sendMessage.setReplyMarkup(replyKeyboardMarkup);
+
+        SendMessage sendMessage = new SendMessage();
+        sendMessage.setText(text);
+        return sendMessage;
+    }
 
 
 }
