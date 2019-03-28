@@ -13,10 +13,15 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 public class BaseService {
+
     protected List<Command> allowableCommands = new ArrayList<>();
     private List<Integer> chatIdInServiceList = new ArrayList<>();
 
 
+
+    public boolean hasUserId(int id){
+        return chatIdInServiceList.contains(id);
+    }
     public boolean hasCommand(String command) {
         return this.allowableCommands
                 .stream()
@@ -26,18 +31,18 @@ public class BaseService {
 //                .get();
     }
 
-    public String parseMessage(String message) {
-        return message.split(" ")[0];
+//    public String parseMessage(String message) {
+//        return message.split(" ")[0];
+//
+//    }
 
-    }
-
-    public SendMessage executeCommand(Update update) {
-
-        String command = parseMessage(update.getMessage().getText());
-
-        assert (hasCommand(command));
-        //create command from string info and execute this
-        SendMessage sendMessage = command.execute();
-        return sendMessage;
-    }
+//    public SendMessage executeCommand(Update update) {
+//
+//        String command = parseMessage(update.getMessage().getText());
+//
+//        assert (hasCommand(command));
+//        //create command from string info and execute this
+//        SendMessage sendMessage = command.execute();
+//        return sendMessage;
+//    }
 }

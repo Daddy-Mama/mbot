@@ -32,12 +32,12 @@ public class Bot extends TelegramLongPollingBot {
     @Deprecated
     ReplyKeyboardMarkup replyKeyboardMarkup = new ReplyKeyboardMarkup();
 
-    private final IMainMenuService IMainMenuService;
+
     private final ITranslatorService translatorService;
 
     @Autowired
-    public Bot(IMainMenuService IMainMenuService, ITranslatorService translatorService) {
-        this.IMainMenuService = IMainMenuService;
+    public Bot(ITranslatorService translatorService) {
+//        this.IMainMenuService = IMainMenuService;
         this.translatorService = translatorService;
     }
 
@@ -51,7 +51,7 @@ public class Bot extends TelegramLongPollingBot {
 
     @Override
     public void onUpdateReceived(Update update) {
-
+        logger.info("===============================================================================================");
         SendMessage sendMessage = translatorService.executeCommand(update);
 
 
