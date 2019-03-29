@@ -6,43 +6,34 @@ import com.example.demo.commands.Commands;
 import com.example.demo.interfaces.IBaseService;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.Update;
+import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboardMarkup;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-public class BaseService {
+public abstract class BaseService {
 
-    protected List<Command> allowableCommands = new ArrayList<>();
+    protected List<String> allowableCommands = new ArrayList<>();
     private List<Integer> chatIdInServiceList = new ArrayList<>();
 
+    protected ReplyKeyboardMarkup replyKeyboardMarkup = new ReplyKeyboardMarkup();
 
+    public BaseService() {
+        setReplyKeyboardMarkup();
+    }
 
-    public boolean hasUserId(int id){
+    public boolean hasUserId(int id) {
         return chatIdInServiceList.contains(id);
     }
+
     public boolean hasCommand(String command) {
         return this.allowableCommands
                 .stream()
-                .map(x -> x.getName())
                 .anyMatch(x -> x.toLowerCase().contains(command));
-//                .findFirst()
-//                .get();
     }
+    protected void setReplyKeyboardMarkup(){}
 
-//    public String parseMessage(String message) {
-//        return message.split(" ")[0];
-//
-//    }
-
-//    public SendMessage executeCommand(Update update) {
-//
-//        String command = parseMessage(update.getMessage().getText());
-//
-//        assert (hasCommand(command));
-//        //create command from string info and execute this
-//        SendMessage sendMessage = command.execute();
-//        return sendMessage;
-//    }
+    abstract SendMessage execute(Update update);
 }

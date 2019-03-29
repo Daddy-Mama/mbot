@@ -17,22 +17,34 @@ import java.util.List;
 import static com.example.demo.commands.Commands.START;
 
 @Service
-public class MainMenuService {
+public class MainMenuService extends BaseService {
 
-//    protected List<Command> allowableCommands = new ArrayList<>();
-protected List<String> allowableCommands = new ArrayList<>();
+    //    protected List<Command> allowableCommands = new ArrayList<>();
+    protected List<String> allowableCommands = new ArrayList<>();
     private List<Integer> chatIdInServiceList = new ArrayList<>();
-
+    private final List<String> menuButtonsList = List.of("Мой профиль", "Поиск аукциона", "Создать аукцион", "FAQ",
+                                                         "Вопросы и предложения");
     protected ReplyKeyboardMarkup replyKeyboardMarkup = new ReplyKeyboardMarkup();
 
 
     @Autowired
     public MainMenuService() {
-       setReplyKeyboardMarkup();
-       allowableCommands.add("Command");
+//        setReplyKeyboardMarkup();
     }
 
-    private void setReplyKeyboardMarkup(){
+    @Override
+    public SendMessage execute(Update update) {
+        return showMenu(update);
+    }
+
+    private SendMessage showMenu(Update update) {
+        SendMessage sendMessage = new SendMessage(update.getMessage().getChatId(), " Privet, Che");
+        sendMessage.setReplyMarkup(this.replyKeyboardMarkup);
+        return sendMessage;
+    }
+
+    @Override
+    protected void setReplyKeyboardMarkup() {
         replyKeyboardMarkup.setSelective(true);
         replyKeyboardMarkup.setResizeKeyboard(true);
         replyKeyboardMarkup.setOneTimeKeyboard(false);
@@ -40,51 +52,26 @@ protected List<String> allowableCommands = new ArrayList<>();
         List<KeyboardRow> keyboard = new ArrayList<>();
 
         // Первая строчка клавиатуры
-        KeyboardRow keyboardFirstRow = new KeyboardRow();
-        // Добавляем кнопки в первую строчку клавиатуры
-        keyboardFirstRow.add(new KeyboardButton("Мой профиль"));
+        KeyboardRow keyboardFirstRowRow = new KeyboardRow();
+        keyboardFirstRowRow.add(new KeyboardButton(menuButtonsList.get(0)));
+        keyboard.add(keyboardFirstRowRow);
 
         // Вторая строчка клавиатуры
         KeyboardRow keyboardSecondRow = new KeyboardRow();
-        // Добавляем кнопки во вторую строчку клавиатуры
-        keyboardSecondRow.add(new KeyboardButton("Поиск аукциона"));
-        keyboardSecondRow.add(new KeyboardButton("Создать аукцион"));
+        keyboardSecondRow.add(new KeyboardButton(menuButtonsList.get(1)));
+        keyboardSecondRow.add(new KeyboardButton(menuButtonsList.get(2)));
 
+        // Третья строчка клавиатуры
         KeyboardRow keyboardThirdRow = new KeyboardRow();
-        // Добавляем кнопки во вторую строчку клавиатуры
-        keyboardThirdRow.add(new KeyboardButton("FAQ"));
-        keyboardThirdRow.add(new KeyboardButton("Support"));
+        keyboardThirdRow.add(new KeyboardButton(menuButtonsList.get(3)));
+        keyboardThirdRow.add(new KeyboardButton(menuButtonsList.get(4)));
 
 
         // Добавляем все строчки клавиатуры в список
-        keyboard.add(keyboardFirstRow);
+        keyboard.add(keyboardFirstRowRow);
         keyboard.add(keyboardSecondRow);
         keyboard.add(keyboardThirdRow);
-        // и устанваливаем этот список нашей клавиатуре
+
         replyKeyboardMarkup.setKeyboard(keyboard);
     }
-    public boolean hasUserId(int id) {
-        return chatIdInServiceList.contains(id);
-    }
-
-    public boolean hasCommand(String command) {
-        return this.allowableCommands
-                .stream()
-//                .map(x -> x.getName())
-                .anyMatch(x -> x.toLowerCase().contains(command));
-//                .findFirst()
-//                .get();
-    }
-
-    public SendMessage execute(Update update) {
-        return showMainMenu(update);
-    }
-
-    public SendMessage showMainMenu(Update update) {
-        SendMessage sendMessage = new SendMessage(update.getMessage().getChatId()," Privet, Che");
-        sendMessage.setReplyMarkup(this.replyKeyboardMarkup);
-        return sendMessage;
-    }
-
-
 }
