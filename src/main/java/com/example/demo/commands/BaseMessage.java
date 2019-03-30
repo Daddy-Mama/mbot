@@ -19,7 +19,7 @@ public abstract class BaseMessage {
         replyKeyboardMarkup.setOneTimeKeyboard(false);
     }
 
-    abstract void setInfo();
+    protected void setInfo(){};
 
     public SendMessage toSendMessage(Long chatId) {
         SendMessage sendMessage = new SendMessage();

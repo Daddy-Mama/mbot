@@ -28,7 +28,7 @@ public class MainMenuService extends BaseService {
 
 
     @Override
-    public SendMessage execute(Update update) {
+    public SendMessage execute(Update update,boolean isCommand) {
         return showMenu(update);
     }
 

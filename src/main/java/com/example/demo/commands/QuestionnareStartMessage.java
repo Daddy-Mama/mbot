@@ -13,11 +13,12 @@ import java.util.List;
 public class QuestionnareStartMessage extends BaseMessage{
 
     public QuestionnareStartMessage() {
-
+       setInfo();
+       addMainMenuButton();
     }
 
     @Override
-    void setInfo() {
+    protected void setInfo() {
         this.text = "Ну что, заполнишь анкету на участие?";
         this.buttonsList = List.of("Заполнить анкету");
         addMainMenuButton();

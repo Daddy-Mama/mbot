@@ -48,15 +48,18 @@ public class TranslatorService implements ITranslatorService {
 
 
         BaseService service = getServiceForUser(user.getId());
+        //user is in cache
         if (service != null) {
             return registeredUserMessage(service, update);
         }
+
         for (BaseService baseService : baseServiceMap.values()) {
             if (baseService.hasCommand(command)) {
                 service = baseService;
                 break;
             }
         }
+        //user sent command and he does't exist in cache
         if (service != null) {
             return commandFromUserMessage(service, update);
         }
@@ -66,11 +69,11 @@ public class TranslatorService implements ITranslatorService {
     }
 
     private SendMessage commandFromUserMessage(BaseService service, Update update) {
-        return service.execute(update);
+        return service.execute(update,true);
     }
 
     private SendMessage registeredUserMessage(BaseService service, Update update) {
-        SendMessage answer = service.execute(update);
+        SendMessage answer = service.execute(update,false);
         return answer;
     }
 

@@ -33,5 +33,5 @@ public abstract class BaseService {
     }
 //    protected void setReplyKeyboardMarkup(){}
 
-    abstract SendMessage execute(Update update);
+    abstract SendMessage execute(Update update, boolean isCommand);
 }
