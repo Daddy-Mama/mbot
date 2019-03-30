@@ -24,21 +24,21 @@ import java.util.stream.Collectors;
 @Component
 public class TranslatorService implements ITranslatorService {
     private final static Logger logger = LogManager.getLogger();
-    //    private final List<BaseService> listOfServices;
-//    private final MainMenuService mainMenuService;
+
+
     private final CacheService cacheService;
     private final Map<Integer, BaseService> baseServiceMap;
 
-    private enum services {MAIN_MENU}
-
-    ;
+//    private enum services {MAIN_MENU}
+//
+//    ;
 
     @Autowired
     public TranslatorService(CacheService cacheService,
                              MainMenuService mainMenuService) {
         this.cacheService = cacheService;
         baseServiceMap = new HashMap<>();
-//        baseServiceMap.put(1, mainMenuService);
+        baseServiceMap.put(mainMenuService.getSERVICE_ID(), mainMenuService);
     }
 
     public SendMessage executeCommand(Update update) {
@@ -50,12 +50,23 @@ public class TranslatorService implements ITranslatorService {
         BaseService service = getServiceForUser(user.getId());
         if (service != null) {
             return registeredUserMessage(service, update);
-        } else {
-
+        }
+        for (BaseService baseService : baseServiceMap.values()) {
+            if (baseService.hasCommand(command)) {
+                service = baseService;
+                break;
+            }
+        }
+        if (service != null) {
+            return commandFromUserMessage(service, update);
         }
 
 
         return errorMessage(update);
+    }
+
+    private SendMessage commandFromUserMessage(BaseService service, Update update) {
+        return service.execute(update);
     }
 
     private SendMessage registeredUserMessage(BaseService service, Update update) {

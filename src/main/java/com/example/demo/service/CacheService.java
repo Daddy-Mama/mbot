@@ -16,12 +16,12 @@ import java.util.Map;
 @Service
 public class CacheService {
     private final Cache cache;
-    private final String cacheName = "userPerServiceCache";
+    private final String CACHE_NAME = "userPerServiceCache";
 
     @Autowired
     public CacheService(CacheManager cacheManager, MainMenuService mainMenuService) {
 
-        this.cache = cacheManager.getCache("userPerServiceCache");
+        this.cache = cacheManager.getCache(CACHE_NAME);
     }
 
     public void addToCache(int cacheId, int userId) {
@@ -29,11 +29,11 @@ public class CacheService {
         cache.put(new Element(userId, cacheId));
     }
 
-    public int getServiceByUserIdInCache(int userId) {
+    public Integer getServiceByUserIdInCache(int userId) {
         if (cache.isKeyInCache(userId)) {
             return Integer.parseInt(cache.get(userId).getObjectValue().toString());
         } else {
-            throw new CacheException();
+            return null;
         }
 
     }
