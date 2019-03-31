@@ -12,26 +12,31 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 @Service
 public class CacheService {
-    private final Cache cache;
-    private final String CACHE_NAME = "userPerServiceCache";
+//    private final Cache cache;
+//    private final String CACHE_NAME = "userPerServiceCache";
+    private ConcurrentHashMap<Integer,Integer> cache= new ConcurrentHashMap<>();
 
     @Autowired
-    public CacheService(CacheManager cacheManager, MainMenuService mainMenuService) {
-
-        this.cache = cacheManager.getCache(CACHE_NAME);
+    public CacheService() {
+//        CacheManager cacheManager = CacheManager.getInstance();
+//        this.cache = cacheManager.getCache(CACHE_NAME);
     }
 
     public void addToCache(int cacheId, int userId) {
 
-        cache.put(new Element(userId, cacheId));
+//        cache.put(new Element(userId, cacheId));
+        cache.put(userId,cacheId);
     }
 
     public Integer getServiceByUserIdInCache(int userId) {
-        if (cache.isKeyInCache(userId)) {
-            return Integer.parseInt(cache.get(userId).getObjectValue().toString());
+//        if (cache.isKeyInCache(userId)) {
+//            return Integer.parseInt(cache.get(userId).getObjectValue().toString());
+        if(cache.containsKey(userId)){
+            return cache.get(userId);
         } else {
             return null;
         }

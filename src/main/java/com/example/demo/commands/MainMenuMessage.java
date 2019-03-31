@@ -6,6 +6,7 @@ import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.Keyboard
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.KeyboardRow;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -36,7 +37,9 @@ public class MainMenuMessage extends BaseMessage{
 //    }
 
     protected void setInfo() {
-        this.buttonsList = List.of("Мой профиль", "Поиск аукциона", "Создать аукцион", "FAQ",
+//        this.buttonsList = List.of("Мой профиль", "Поиск аукциона", "Создать аукцион", "FAQ",
+//                "Вопросы и предложения");
+        this.buttonsList = Arrays.asList("Мой профиль", "Поиск аукциона", "Создать аукцион", "FAQ",
                 "Вопросы и предложения");
 //        replyKeyboardMarkup.setSelective(true);
 //        replyKeyboardMarkup.setResizeKeyboard(true);
@@ -47,7 +50,7 @@ public class MainMenuMessage extends BaseMessage{
         // Первая строчка клавиатуры
         KeyboardRow keyboardFirstRowRow = new KeyboardRow();
         keyboardFirstRowRow.add(new KeyboardButton(buttonsList.get(0)));
-        keyboard.add(keyboardFirstRowRow);
+
 
         // Вторая строчка клавиатуры
         KeyboardRow keyboardSecondRow = new KeyboardRow();

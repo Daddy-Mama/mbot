@@ -3,12 +3,13 @@ package com.example.demo.commands;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboardMarkup;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
  * Created by Артем on 30.03.2019.
  */
-public abstract class BaseMessage {
+public class BaseMessage {
     protected String text;
     protected List<String> buttonsList;
     protected ReplyKeyboardMarkup replyKeyboardMarkup = new ReplyKeyboardMarkup();
@@ -17,6 +18,7 @@ public abstract class BaseMessage {
         replyKeyboardMarkup.setSelective(true);
         replyKeyboardMarkup.setResizeKeyboard(true);
         replyKeyboardMarkup.setOneTimeKeyboard(false);
+        buttonsList = new ArrayList<>();
     }
 
     protected void setInfo(){};

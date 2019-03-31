@@ -7,6 +7,7 @@ import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.Update;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 @Service
@@ -15,7 +16,7 @@ public class MainMenuService extends BaseService {
     //    protected List<Command> allowableCommands = new ArrayList<>();
     protected List<String> allowableCommands = new ArrayList<>();
     private List<Integer> chatIdInServiceList = new ArrayList<>();
-    private final List<String> menuButtonsList = List.of("Мой профиль", "Поиск аукциона", "Создать аукцион", "FAQ",
+    private final List<String> menuButtonsList = Arrays.asList("Мой профиль", "Поиск аукциона", "Создать аукцион", "FAQ",
             "Вопросы и предложения");
 //    protected ReplyKeyboardMarkup replyKeyboardMarkup = new ReplyKeyboardMarkup();
 

@@ -1,5 +1,6 @@
 package com.example.demo.service;
 
+import com.example.demo.commands.MainMenuMessage;
 import com.example.demo.commands.QuestionnareStartMessage;
 import com.example.demo.commands.QuestionsMessage;
 import com.example.demo.model.Questionnare;
@@ -27,7 +28,7 @@ public class QuastionnareService extends BaseService {
 
     @Autowired
     public QuastionnareService(CacheService cacheService) {
-        allowableCommands.add("Поиск аукциона");
+        allowableCommands.add("Создать аукцион");
         this.cacheService = cacheService;
         this.SERVICE_ID = 2;
     }
@@ -40,13 +41,13 @@ public class QuastionnareService extends BaseService {
             addUserToStageCache(user);
             return letsStartMessage(update);
         } else {
-
+            return askQuestion(update);
         }
 //        if (null == cacheService.getServiceByUserIdInCache(user.getId())) {
 //            cacheService.addToCache(this.SERVICE_ID, user.getId());
 //            return new QuestionnareStartMessage().toSendMessage(update.getMessage().getChatId());
 //        }
-        return null;
+
     }
 
     //add user to stageCache, if he is in cache delete and add again(clear history)
@@ -79,19 +80,19 @@ public class QuastionnareService extends BaseService {
             //save anketa to DB
 
 
-
+            return new MainMenuMessage("Теперь ты участник").toSendMessage(update.getMessage().getChatId());
         }
     }
 
     private SendMessage validateAnswers(List<String> answers,Update update) {
-        Pattern p = Pattern.compile("^\\d{1,2}[.] [a-zA-Z]+");
-        Optional<String> badLine = answers.stream().filter(x -> !p.matcher(x).find()).findAny();
-        if (badLine.isPresent()) {
-            SendMessage sendMessage = new SendMessage(update.getMessage().getChatId(), "Неправильная строка: " + badLine.get());
-            return sendMessage;
-        }
+//        Pattern p = Pattern.compile("^\\d{1,2}[.] [a-zA-Z]+");
+//        Optional<String> badLine = answers.stream().filter(x -> !p.matcher(x.trim()).find()).findAny();
+//        if (badLine.isPresent()) {
+//            SendMessage sendMessage = new SendMessage(update.getMessage().getChatId(), "Неправильная строка: " + badLine.get());
+//            return sendMessage;
+//        }
         if (answers.size() != Questions.questions.size()){
-            SendMessage sendMessage = new SendMessage(update.getMessage().getChatId(), "Ответь на все вопросы!");
+            SendMessage sendMessage = new SendMessage(update.getMessage().getChatId(), "Ответь на все вопросы одной строкой!");
             return sendMessage;
         }
         return null;

@@ -5,6 +5,7 @@ import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.Keyboard
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.KeyboardRow;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -14,13 +15,12 @@ public class QuestionnareStartMessage extends BaseMessage{
 
     public QuestionnareStartMessage() {
        setInfo();
-       addMainMenuButton();
     }
 
     @Override
     protected void setInfo() {
         this.text = "Ну что, заполнишь анкету на участие?";
-        this.buttonsList = List.of("Заполнить анкету");
+        this.buttonsList = new ArrayList<>(Arrays.asList("Заполнить анкету"));
         addMainMenuButton();
 
 //        replyKeyboardMarkup.setSelective(true);
