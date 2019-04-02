@@ -20,7 +20,7 @@ public class QuestionnareStartMessage extends BaseMessage{
     @Override
     protected void setInfo() {
         this.text = "Ну что, заполнишь анкету на участие?";
-        this.buttonsList = new ArrayList<>(Arrays.asList("Заполнить анкету"));
+        this.buttonsList = new ArrayList<>(List.of("Заполнить анкету"));
         addMainMenuButton();
 
 //        replyKeyboardMarkup.setSelective(true);

@@ -3,20 +3,20 @@ package com.example.demo.service;
 import com.example.demo.commands.MainMenuMessage;
 import com.example.demo.commands.QuestionnareStartMessage;
 import com.example.demo.commands.QuestionsMessage;
+import com.example.demo.commands.UploadPhotoRequestMessage;
+import com.example.demo.interfaces.repositories.QuestionnareDaoRepository;
 import com.example.demo.model.Questionnare;
-import com.example.demo.model.Questions;
+import com.example.demo.model.QuestionsList;
+import com.example.demo.model.dao.QuestionnareDao;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
+import org.telegram.telegrambots.meta.api.objects.PhotoSize;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.api.objects.User;
 
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
-import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.regex.Pattern;
 
 /**
  * Created by Артем on 28.03.2019.
@@ -25,12 +25,13 @@ import java.util.regex.Pattern;
 public class QuastionnareService extends BaseService {
     private final CacheService cacheService;
     private ConcurrentHashMap<Integer, Questionnare> userOnStage = new ConcurrentHashMap<>();
-
+    private final QuestionnareDaoRepository questionnareDaoRepository;
     @Autowired
-    public QuastionnareService(CacheService cacheService) {
+    public QuastionnareService(CacheService cacheService,QuestionnareDaoRepository questionnareDaoRepository) {
         allowableCommands.add("Создать аукцион");
         this.cacheService = cacheService;
         this.SERVICE_ID = 2;
+        this.questionnareDaoRepository = questionnareDaoRepository;
     }
 
     @Override
@@ -65,34 +66,61 @@ public class QuastionnareService extends BaseService {
     private SendMessage askQuestion(Update update) {
         User user = update.getMessage().getFrom();
         Questionnare questionnare = userOnStage.get(user.getId());
-        if (!questionnare.isAsked()) {
-            questionnare.setAsked(true);
+        if (!questionnare.isInProgress()) {
+            questionnare.setInProgress(true);
             return new QuestionsMessage().toSendMessage(update.getMessage().getChatId());
         } else {
-            //ask him for photo
-            List<String> answers = Arrays.asList(update.getMessage().getText().split("\n"));
-            //check if answers are in correct form
-            SendMessage sendMessage = validateAnswers(answers,update);
-            if (sendMessage!=null){
-                return sendMessage;
-            }
-            questionnare.setAnswers(answers);
-            //save anketa to DB
-
-
+            buildQuestionnare(update, questionnare);
             return new MainMenuMessage("Теперь ты участник").toSendMessage(update.getMessage().getChatId());
         }
     }
 
-    private SendMessage validateAnswers(List<String> answers,Update update) {
+
+    private SendMessage buildQuestionnare(Update update, Questionnare questionnare) {
+        if (update.getMessage().getText() == null || update.getMessage()
+                                                           .getText()
+                                                           .isEmpty() && questionnare.getPhotoId() == null) {
+            //ask him for photo
+            List<String> answers = List.of(update.getMessage().getText().split("\n"));
+            //check if answers are in correct form
+            SendMessage sendMessage = validateAnswers(answers, update);
+            if (sendMessage != null) {
+                return sendMessage;
+            }
+            questionnare.setAnswers(answers);
+            this.userOnStage.replace(update.getMessage().getFrom().getId(), questionnare);
+            return new UploadPhotoRequestMessage().toSendMessage(update.getMessage().getChatId());
+        } else if (update.getMessage().getPhoto().size() > 0) {
+            List<PhotoSize> photoList = update.getMessage().getPhoto();
+            PhotoSize photoSize = photoList.get(photoList.size()-1);
+            if (questionnare.getPhotoId()==null){
+                questionnare.setPhotoId(photoSize.getFileId());
+            }
+        }
+        this.userOnStage.replace(update.getMessage().getFrom().getId(), questionnare);
+        if (questionnare.isFull()){
+            QuestionnareDao questionnareDao = new QuestionnareDao(questionnare);
+            //save anketa to DB
+            questionnareDaoRepository.saveAndFlush(questionnareDao);
+            SendMessage sendMessage = new SendMessage();
+            //Create class that must be converted to JSON for tranport data to HighLevel
+            //there parse this and send.
+//            sendMessage.set
+        }
+
+
+    }
+
+    private SendMessage validateAnswers(List<String> answers, Update update) {
 //        Pattern p = Pattern.compile("^\\d{1,2}[.] [a-zA-Z]+");
 //        Optional<String> badLine = answers.stream().filter(x -> !p.matcher(x.trim()).find()).findAny();
 //        if (badLine.isPresent()) {
 //            SendMessage sendMessage = new SendMessage(update.getMessage().getChatId(), "Неправильная строка: " + badLine.get());
 //            return sendMessage;
 //        }
-        if (answers.size() != Questions.questions.size()){
-            SendMessage sendMessage = new SendMessage(update.getMessage().getChatId(), "Ответь на все вопросы одной строкой!");
+        if (answers.size() != QuestionsList.questions.size()) {
+            SendMessage sendMessage = new SendMessage(update.getMessage().getChatId(),
+                                                      "Ответь на все вопросы одной строкой!");
             return sendMessage;
         }
         return null;

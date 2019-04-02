@@ -16,7 +16,7 @@ public class MainMenuService extends BaseService {
     //    protected List<Command> allowableCommands = new ArrayList<>();
     protected List<String> allowableCommands = new ArrayList<>();
     private List<Integer> chatIdInServiceList = new ArrayList<>();
-    private final List<String> menuButtonsList = Arrays.asList("Мой профиль", "Поиск аукциона", "Создать аукцион", "FAQ",
+    private final List<String> menuButtonsList = List.of("Мой профиль", "Поиск аукциона", "Создать аукцион", "FAQ",
             "Вопросы и предложения");
 //    protected ReplyKeyboardMarkup replyKeyboardMarkup = new ReplyKeyboardMarkup();
 

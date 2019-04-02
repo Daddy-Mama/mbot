@@ -11,8 +11,10 @@ import java.util.List;
 public class Questionnare {
     private User user;
     private Integer chatId;
-   private List<String> answers = new ArrayList<>();
-private boolean isAsked = false;
+    private List<String> answers = new ArrayList<>();
+    private boolean inProgress = false;
+    private String photoId;
+
     public Questionnare(User user) {
         this.user = user;
     }
@@ -24,6 +26,18 @@ private boolean isAsked = false;
     }
 
     public Questionnare() {
+    }
+
+    public void setChatId(Integer chatId) {
+        this.chatId = chatId;
+    }
+
+    public String getPhotoId() {
+        return photoId;
+    }
+
+    public void setPhotoId(String photoId) {
+        this.photoId = photoId;
     }
 
     public User getUser() {
@@ -49,15 +63,19 @@ private boolean isAsked = false;
     public void addAnswer(String answer) {
         this.answers.add(answer);
     }
-    public boolean isAsked(){
-        return isAsked;
+
+    public boolean isInProgress() {
+        return inProgress;
     }
 
-    public void setAsked(boolean asked) {
-        isAsked = asked;
+    public void setInProgress(boolean inProgress) {
+        this.inProgress = inProgress;
     }
 
     public void setAnswers(List<String> answers) {
         this.answers = answers;
+    }
+    public boolean isFull(){
+        return answers.size()>0 && photoId!=null && inProgress;
     }
 }

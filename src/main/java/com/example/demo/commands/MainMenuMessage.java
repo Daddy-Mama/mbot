@@ -39,7 +39,7 @@ public class MainMenuMessage extends BaseMessage{
     protected void setInfo() {
 //        this.buttonsList = List.of("Мой профиль", "Поиск аукциона", "Создать аукцион", "FAQ",
 //                "Вопросы и предложения");
-        this.buttonsList = Arrays.asList("Мой профиль", "Поиск аукциона", "Создать аукцион", "FAQ",
+        this.buttonsList = List.of("Мой профиль", "Поиск аукциона", "Создать аукцион", "FAQ",
                 "Вопросы и предложения");
 //        replyKeyboardMarkup.setSelective(true);
 //        replyKeyboardMarkup.setResizeKeyboard(true);

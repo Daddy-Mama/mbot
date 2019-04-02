@@ -1,11 +1,7 @@
 package com.example.demo.commands;
 
-import com.example.demo.model.Questions;
-import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.KeyboardButton;
-import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.KeyboardRow;
+import com.example.demo.model.QuestionsList;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.stream.Collectors;
 
 /**
@@ -19,7 +15,7 @@ public class QuestionsMessage extends BaseMessage {
 
     @Override
     protected void setInfo() {
-        this.text = Questions.questions.stream().collect(Collectors.joining("\n"));
+        this.text = QuestionsList.questions.stream().collect(Collectors.joining("\n"));
 //        buttonsList.add("Ok");
 //        List<KeyboardRow> keyboard = new ArrayList<>();
 //        KeyboardRow keyboardFirstRow = new KeyboardRow();
