@@ -59,11 +59,12 @@ public class TranslatorService implements ITranslatorService {
         if (service != null) {
             return registeredUserMessage(service, update);
         }
-
-        for (BaseService baseService : baseServiceMap.values()) {
-            if (baseService.hasCommand(command)) {
-                service = baseService;
-                break;
+        if (command != null) {
+            for (BaseService baseService : baseServiceMap.values()) {
+                if (baseService.hasCommand(command)) {
+                    service = baseService;
+                    break;
+                }
             }
         }
         //user sent command and he does't exist in cache
@@ -88,7 +89,9 @@ public class TranslatorService implements ITranslatorService {
 //        SendMessage answer = ;
 //        answer.setChatId(update.getMessage().getChatId());
 //        answer.setText("Что-то странное.. Не могу разобраться:( Напиши в Support, пожалуйста, пусть починят меня!");
-        return new MainMenuMessage("Что-то странное.. Может ты предыдущую сессию не закончил:( Верну тебя в меню").toSendMessage(update.getMessage().getChatId());
+        return new MainMenuMessage(
+                "Что-то странное.. Может ты предыдущую сессию не закончил:( Верну тебя в меню").toSendMessage(
+                update.getMessage().getChatId());
     }
 
     private BaseService getServiceForUser(int userId) {
@@ -96,7 +99,11 @@ public class TranslatorService implements ITranslatorService {
     }
 
     private final String parseMessage(String parsingMessage) {
-        return parsingMessage.toLowerCase();
+        if (parsingMessage != null) {
+            return parsingMessage.toLowerCase();
+        } else {
+            return null;
+        }
 //        String[] command = parsingMessage.split(" ");
 //        String result = "";
 //        for (int i = 0; i < command.length; i++) {

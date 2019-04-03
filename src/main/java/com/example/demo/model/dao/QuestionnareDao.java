@@ -27,20 +27,34 @@ public class QuestionnareDao {
     @Column(name = "information")
     private String information;
 
+    @NotNull
+    @Column(name = "photo_id")
+    private String photoId;
+
+
     public QuestionnareDao() {
     }
 
     public QuestionnareDao(Questionnare questionnare){
         this.userName = questionnare.getUser().getUserName();
-        this.information = questionnare.getAnswers().stream().collect(Collectors.joining("\n"));
+        this.information = questionnare.getAnswers();
+        this.photoId = questionnare.getPhotoId();
     }
 
-    public String getUserId() {
+    public String getPhotoId() {
+        return photoId;
+    }
+
+    public void setPhotoId(String photoId) {
+        this.photoId = photoId;
+    }
+
+    public String getUserName() {
         return userName;
     }
 
-    public void setUserId(String userId) {
-        this.userName = userId;
+    public void setUserName(String userName) {
+        this.userName = userName;
     }
 
     public String getInformation() {

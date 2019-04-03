@@ -3,6 +3,11 @@ package com.example.demo.bot;
 
 import com.example.demo.interfaces.ITranslatorService;
 import com.example.demo.interfaces.IMainMenuService;
+import com.example.demo.model.dto.MessageTransportDto;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.ObjectWriter;
+import com.google.gson.Gson;
+import com.google.gson.JsonSyntaxException;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,16 +15,20 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
+import org.telegram.telegrambots.meta.api.methods.BotApiMethod;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.methods.send.SendPhoto;
 import org.telegram.telegrambots.meta.api.objects.PhotoSize;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboardMarkup;
+import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboardRemove;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.KeyboardRow;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.Map;
 
 @Component
 @PropertySource("classpath:application.properties")
@@ -55,54 +64,56 @@ public class Bot extends TelegramLongPollingBot {
     @Override
     public void onUpdateReceived(Update update) {
         logger.info("===============================================================================================");
-        String f_id = update.getMessage().getPhoto().stream()
-                .sorted(Comparator.comparing(PhotoSize::getFileSize).reversed())
-                .findFirst()
-                .orElse(null).getFileId();
-        SendPhoto photo = new SendPhoto()
-                .setChatId(update.getMessage().getChatId())
-                .setPhoto(f_id)
-                .setCaption("Анкета участника=)");
-        try {
-            execute(photo);
-        } catch (TelegramApiException e) {
-            e.printStackTrace();
-        }
         SendMessage sendMessage = translatorService.executeCommand(update);
 
+        buildAnswer(sendMessage, update);
 
-//        doSmth();
-//        SendMessage sendMessage = new SendMessage().setChatId(update.getMessage().getChatId());
-//        sendMessage.setReplyMarkup(replyKeyboardMarkup);
-//        sendMessage.setText("Test txt");
+    }
+
+    public synchronized void sendMsg(SendMessage sendMessage) {
         try {
+            hideKeyboard(sendMessage);
             execute(sendMessage);
         } catch (TelegramApiException e) {
             e.printStackTrace();
         }
-//        sendMsg(update.getMessage().getChatId().toString(), "I know, it's you, " + update.getMessage().getFrom().getFirstName() + " " + update.getMessage().getFrom().getLastName());
-
-
     }
 
-    /**
-     * Метод для настройки сообщения и его отправки.
-     *
-     * @param chatId id чата
-     * @param s      Строка, которую необходимот отправить в качестве сообщения.
-     */
-    public synchronized void sendMsg(String chatId, String s) {
-        SendMessage sendMessage = new SendMessage();
-        sendMessage.enableMarkdown(true);
-        sendMessage.setChatId(chatId);
-        sendMessage.setText(s);
+    public synchronized void buildAnswer(SendMessage sendMessage, Update update) {
         try {
-            execute(sendMessage);
+            Gson gson = new Gson();
+            MessageTransportDto messageTransportDto = gson.fromJson(sendMessage.getText(),
+                                                                    MessageTransportDto.class);
+            if (messageTransportDto.getPhotoId() != null) {
+                String f_id = messageTransportDto.getPhotoId();
+                SendPhoto photo = new SendPhoto()
+                        .setChatId(update.getMessage().getChatId())
+                        .setPhoto(f_id)
+                        .setCaption(messageTransportDto.getText());
+                hideKeyboard(photo);
+                execute(photo);
+            }
+
         } catch (TelegramApiException e) {
-//            log.log(Level.SEVERE, "Exception: ", e.toString());
+            e.printStackTrace();
+        } catch (JsonSyntaxException e) {
+            sendMsg(sendMessage);
         }
     }
 
+
+    private void hideKeyboard(SendMessage sendMessage){
+        if (sendMessage.getReplyMarkup()==null){
+            ReplyKeyboardRemove replyKeyboardRemove = new ReplyKeyboardRemove();
+            sendMessage.setReplyMarkup(replyKeyboardRemove);
+        }
+    }
+    private void hideKeyboard(SendPhoto sendPhoto){
+        if (sendPhoto.getReplyMarkup()==null){
+            ReplyKeyboardRemove replyKeyboardRemove = new ReplyKeyboardRemove();
+            sendPhoto.setReplyMarkup(replyKeyboardRemove);
+        }
+    }
 
     @Deprecated
     public void doSmth() {

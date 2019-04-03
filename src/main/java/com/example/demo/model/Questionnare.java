@@ -4,6 +4,7 @@ import org.telegram.telegrambots.meta.api.objects.User;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * Created by Артем on 30.03.2019.
@@ -11,7 +12,7 @@ import java.util.List;
 public class Questionnare {
     private User user;
     private Integer chatId;
-    private List<String> answers = new ArrayList<>();
+    private  String answers;
     private boolean inProgress = false;
     private String photoId;
 
@@ -19,7 +20,7 @@ public class Questionnare {
         this.user = user;
     }
 
-    public Questionnare(User user, int chatId, List<String> answers) {
+    public Questionnare(User user, int chatId, String answers) {
         this.user = user;
         this.chatId = chatId;
         this.answers = answers;
@@ -56,13 +57,10 @@ public class Questionnare {
         this.chatId = chatId;
     }
 
-    public List<String> getAnswers() {
+    public String getAnswers() {
         return answers;
     }
 
-    public void addAnswer(String answer) {
-        this.answers.add(answer);
-    }
 
     public boolean isInProgress() {
         return inProgress;
@@ -73,9 +71,10 @@ public class Questionnare {
     }
 
     public void setAnswers(List<String> answers) {
-        this.answers = answers;
+
+        this.answers = answers.stream().collect(Collectors.joining("\n"));
     }
     public boolean isFull(){
-        return answers.size()>0 && photoId!=null && inProgress;
+        return answers!=null && photoId!=null && inProgress;
     }
 }
