@@ -63,10 +63,9 @@ public class QuastionnareService extends BaseService implements IQuestionnareSer
             return new StartQuestionnareMessage().addBackButton("/back/menu").toMessageTransportDto();
         } else {
             //Путь когда пользователь присылает сообщение ( НЕ КОМАНДА)
-            operateQuestionnare(update, userOnStage.get(user.getId()));
+            return operateQuestionnare(update, userOnStage.get(user.getId()));
         }
 
-        return null;
     }
 
     @Override
@@ -106,7 +105,7 @@ public class QuastionnareService extends BaseService implements IQuestionnareSer
 
 
     private MessageTransportDto askQuestion(Update update) {
-        User user = update.getMessage().getFrom();
+        User user = update.getCallbackQuery().getFrom();
         if (userOnStage.contains(user.getId())) {
             userOnStage.remove(user.getId());
         } else {
@@ -119,6 +118,9 @@ public class QuastionnareService extends BaseService implements IQuestionnareSer
 
 
     private MessageTransportDto operateQuestionnare(Update update, Questionnare questionnare) {
+        if (questionnare==null){
+            return new CustomErrorMessage("Ошибка сервиса создания анкеты").toMessageTransportDto();
+        }
         if (!questionnare.isFull()) {
             return buildQuestionnare(update, questionnare);
         } else {
@@ -138,7 +140,7 @@ public class QuastionnareService extends BaseService implements IQuestionnareSer
             }
 
             questionnare.setAnswers(answers);
-            this.userOnStage.replace(update.getMessage().getFrom().getId(), questionnare);
+//            this.userOnStage.replace(update.getMessage().getFrom().getId(), questionnare);
 
             //ask to send photo
             messageTransportDto = new UploadPhotoRequestMessage().toMessageTransportDto();

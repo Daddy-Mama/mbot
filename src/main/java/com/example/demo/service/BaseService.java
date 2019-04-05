@@ -10,7 +10,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public abstract class BaseService implements IBaseService {
-    protected int SERVICE_ID;
+    protected Integer SERVICE_ID;
     protected List<String> allowableCommands = new ArrayList<>();
     protected List<String> allowableCallbackQueries = new ArrayList<>();
 
@@ -26,12 +26,12 @@ public abstract class BaseService implements IBaseService {
     public boolean hasCommand(String command) {
         return this.allowableCommands
                 .stream()
-                .anyMatch(x -> x.toLowerCase().contains(command));
+                .anyMatch(x -> x.toLowerCase().contains(command.toLowerCase()));
     }
 
     @Override
     public boolean hasCallbackQuery(String path) {
-        return this.allowableCommands
+        return this.allowableCallbackQueries
                 .stream()
                 .anyMatch(x->x.contains(path));
     }

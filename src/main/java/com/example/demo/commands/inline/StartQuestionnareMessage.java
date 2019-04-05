@@ -5,6 +5,7 @@ import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKe
 public class StartQuestionnareMessage extends BaseInlineMessage {
     public StartQuestionnareMessage() {
         this.text = "Хотите заполнить анкету на участие?";
+        setInfo();
     }
 
     @Override

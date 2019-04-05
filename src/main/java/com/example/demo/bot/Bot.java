@@ -69,10 +69,13 @@ public class Bot extends TelegramLongPollingBot {
         if (update.hasCallbackQuery()) {
             messageTransportDto = operateCallbackQuery(update);
         }
-        if (update.hasMessage() && update.getMessage().hasText()) {
+        if (update.hasMessage() && update.getMessage().hasText() ) {
             messageTransportDto = operateMessage(update);
         }
 
+        if (update.hasMessage() && !update.getMessage().hasText() && update.getMessage().getPhoto().size()>0 ) {
+            messageTransportDto = operateMessage(update);
+        }
 
         try {
             buildAnswer(messageTransportDto, update);
@@ -95,9 +98,14 @@ public class Bot extends TelegramLongPollingBot {
     public synchronized void buildAnswer(MessageTransportDto messageTransportDto, Update update)
             throws TelegramApiException {
 
+        if(messageTransportDto==null){
+            SendMessage sendMessage = new SendMessage();
+            sendMessage.setChatId(update.getMessage().getChatId());
+            sendMessage.setText("Ответ пустой");
+        }
+
         if (messageTransportDto.getEditMessageText() != null) {
             EditMessageText editMessageText = messageTransportDto.getEditMessageText();
-            editMessageText.setChatId(update.getMessage().getChatId());
 
             int message_id = 0;
             long chat_id = 0;

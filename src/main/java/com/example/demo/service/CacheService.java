@@ -28,7 +28,7 @@ public class CacheService implements ICacheService {
     }
 
     public void addToCache(int cacheId, int userId) {
-        if (cache.get(userId) != null) {
+        if (cache.get(userId) == null) {
             cache.put(userId, cacheId);
         }
     }
