@@ -1,5 +1,6 @@
 package com.example.demo.service;
 
+import com.example.demo.interfaces.ICacheService;
 import com.example.demo.model.CachedUser;
 import net.sf.ehcache.CacheException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,10 +16,10 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 @Service
-public class CacheService {
-//    private final Cache cache;
+public class CacheService implements ICacheService {
+    //    private final Cache cache;
 //    private final String CACHE_NAME = "userPerServiceCache";
-    private ConcurrentHashMap<Integer,Integer> cache= new ConcurrentHashMap<>();
+    private ConcurrentHashMap<Integer, Integer> cache = new ConcurrentHashMap<>();
 
     @Autowired
     public CacheService() {
@@ -27,30 +28,27 @@ public class CacheService {
     }
 
     public void addToCache(int cacheId, int userId) {
-
-//        cache.put(new Element(userId, cacheId));
-        cache.put(userId,cacheId);
+        if (cache.get(userId) != null) {
+            cache.put(userId, cacheId);
+        }
     }
 
     public Integer getServiceByUserIdInCache(int userId) {
 //        if (cache.isKeyInCache(userId)) {
 //            return Integer.parseInt(cache.get(userId).getObjectValue().toString());
-        if(cache.containsKey(userId)){
+        if (cache.containsKey(userId)) {
             return cache.get(userId);
         } else {
             return null;
         }
 
     }
-//
-//    private services getCacheName(int cacheId) {
-//        switch (cacheId) {
-//        case 1:
-//            return services.MAIN_MENU;
-//        default:
-//            throw new CacheException();
-//        }
-//    }
+
+    public void removeFromCache(int userId){
+        if (cache.contains(userId)){
+            cache.remove(userId);
+        }
+    }
 
 
 }

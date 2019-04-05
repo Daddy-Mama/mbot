@@ -18,6 +18,7 @@ import org.telegram.telegrambots.bots.TelegramLongPollingBot;
 import org.telegram.telegrambots.meta.api.methods.BotApiMethod;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.methods.send.SendPhoto;
+import org.telegram.telegrambots.meta.api.methods.updatingmessages.EditMessageText;
 import org.telegram.telegrambots.meta.api.objects.PhotoSize;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboardMarkup;
@@ -49,7 +50,6 @@ public class Bot extends TelegramLongPollingBot {
 
     @Autowired
     public Bot(ITranslatorService translatorService) {
-//        this.IMainMenuService = IMainMenuService;
         this.translatorService = translatorService;
     }
 
@@ -64,83 +64,74 @@ public class Bot extends TelegramLongPollingBot {
     @Override
     public void onUpdateReceived(Update update) {
         logger.info("===============================================================================================");
-        SendMessage sendMessage = translatorService.executeCommand(update);
 
-        buildAnswer(sendMessage, update);
+        MessageTransportDto messageTransportDto = new MessageTransportDto();
+        if (update.hasCallbackQuery()) {
+            messageTransportDto = operateCallbackQuery(update);
+        }
+        if (update.hasMessage() && update.getMessage().hasText()) {
+            messageTransportDto = operateMessage(update);
+        }
 
-    }
 
-    public synchronized void sendMsg(SendMessage sendMessage) {
         try {
-            hideKeyboard(sendMessage);
-            execute(sendMessage);
+            buildAnswer(messageTransportDto, update);
         } catch (TelegramApiException e) {
             e.printStackTrace();
         }
+
     }
 
-    public synchronized void buildAnswer(SendMessage sendMessage, Update update) {
-        try {
-            Gson gson = new Gson();
-            MessageTransportDto messageTransportDto = gson.fromJson(sendMessage.getText(),
-                                                                    MessageTransportDto.class);
-            if (messageTransportDto.getPhotoId() != null) {
-                String f_id = messageTransportDto.getPhotoId();
-                SendPhoto photo = new SendPhoto()
-                        .setChatId(update.getMessage().getChatId())
-                        .setPhoto(f_id)
-                        .setCaption(messageTransportDto.getText());
-                hideKeyboard(photo);
-                execute(photo);
+    private MessageTransportDto operateCallbackQuery(Update update) {
+        return translatorService.operateCallbackQuery(update);
+    }
+
+
+    private MessageTransportDto operateMessage(Update update) {
+        return translatorService.operateMessage(update);
+    }
+
+
+    public synchronized void buildAnswer(MessageTransportDto messageTransportDto, Update update)
+            throws TelegramApiException {
+
+        if (messageTransportDto.getEditMessageText() != null) {
+            EditMessageText editMessageText = messageTransportDto.getEditMessageText();
+            editMessageText.setChatId(update.getMessage().getChatId());
+
+            int message_id = 0;
+            long chat_id = 0;
+            if (update.hasCallbackQuery()) {
+                message_id = update.getCallbackQuery().getMessage().getMessageId();
+                chat_id = update.getCallbackQuery().getMessage().getChatId();
+
+            } else {
+                message_id = update.getMessage().getMessageId();
+                chat_id = update.getMessage().getChatId();
             }
 
-        } catch (TelegramApiException e) {
-            e.printStackTrace();
-        } catch (JsonSyntaxException e) {
-            sendMsg(sendMessage);
+            editMessageText.setChatId(chat_id);
+            editMessageText.setMessageId(message_id);
+            execute(editMessageText);
+        }
+
+        if (messageTransportDto.getSendMessage() != null) {
+
+            SendMessage sendMessage = messageTransportDto.getSendMessage();
+            sendMessage.setChatId(update.getMessage().getChatId());
+
+            execute(sendMessage);
+        }
+
+        if (messageTransportDto.getSendPhoto() != null) {
+
+            SendPhoto sendPhoto = messageTransportDto.getSendPhoto();
+            sendPhoto.setChatId(update.getMessage().getChatId());
+
+            execute(sendPhoto);
         }
     }
 
-
-    private void hideKeyboard(SendMessage sendMessage){
-        if (sendMessage.getReplyMarkup()==null){
-            ReplyKeyboardRemove replyKeyboardRemove = new ReplyKeyboardRemove();
-            sendMessage.setReplyMarkup(replyKeyboardRemove);
-        }
-    }
-    private void hideKeyboard(SendPhoto sendPhoto){
-        if (sendPhoto.getReplyMarkup()==null){
-            ReplyKeyboardRemove replyKeyboardRemove = new ReplyKeyboardRemove();
-            sendPhoto.setReplyMarkup(replyKeyboardRemove);
-        }
-    }
-
-    @Deprecated
-    public void doSmth() {
-        replyKeyboardMarkup.setSelective(true);
-        replyKeyboardMarkup.setResizeKeyboard(true);
-        replyKeyboardMarkup.setOneTimeKeyboard(false);
-
-        ArrayList<KeyboardRow> keyboard = new ArrayList<>(3);
-
-        KeyboardRow keyboardFirstRow = new KeyboardRow();
-        keyboardFirstRow.add("1");
-
-        keyboard.add(keyboardFirstRow);
-
-        KeyboardRow keyboardSecondRow = new KeyboardRow();
-        keyboardSecondRow.add("2");
-        keyboardSecondRow.add("3");
-        keyboard.add(keyboardSecondRow);
-
-        KeyboardRow keyboardThirdRow = new KeyboardRow();
-        keyboardThirdRow.add("4");
-        keyboardThirdRow.add("5");
-        keyboard.add(keyboardThirdRow);
-        replyKeyboardMarkup.setKeyboard(keyboard);
-//        return keyboard;
-
-    }
 
     /**
      * Метод возвращает имя бота, указанное при регистрации.

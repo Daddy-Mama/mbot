@@ -1,36 +1,38 @@
 package com.example.demo.model.dto;
 
+import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
+import org.telegram.telegrambots.meta.api.methods.send.SendPhoto;
+import org.telegram.telegrambots.meta.api.methods.updatingmessages.EditMessageText;
+
 public class MessageTransportDto {
-    private String text;
-    private String photoId;
+    private SendMessage sendMessage;
+    private SendPhoto sendPhoto;
+    private EditMessageText editMessageText;
 
     public MessageTransportDto() {
     }
 
-    public MessageTransportDto(String text, String photoId) {
-        this.text = text;
-        this.photoId = photoId;
+    public SendMessage getSendMessage() {
+        return sendMessage;
     }
 
-    public MessageTransportDto(String text) {
-        this.text = text;
+    public void setSendMessage(SendMessage sendMessage) {
+        this.sendMessage = sendMessage;
     }
 
-    public String getPhotoId() {
-        return photoId;
+    public SendPhoto getSendPhoto() {
+        return sendPhoto;
     }
 
-    public void setPhotoId(String photoId) {
-        this.photoId = photoId;
+    public void setSendPhoto(SendPhoto sendPhoto) {
+        this.sendPhoto = sendPhoto;
     }
 
-    public String getText() {
-        return text;
+    public EditMessageText getEditMessageText() {
+        return editMessageText;
     }
 
-    public void setText(String text) {
-        this.text = text;
+    public void setEditMessageText(EditMessageText editMessageText) {
+        this.editMessageText = editMessageText;
     }
-
-
 }

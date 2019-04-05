@@ -16,17 +16,6 @@ public class QuestionsMessage extends BaseMessage {
     @Override
     protected void setInfo() {
         this.text = QuestionsList.questions.stream().collect(Collectors.joining("\n"));
-//        buttonsList.add("Ok");
-//        List<KeyboardRow> keyboard = new ArrayList<>();
-//        KeyboardRow keyboardFirstRow = new KeyboardRow();
-//        keyboardFirstRow.add(new KeyboardButton(buttonsList.get(0)));
-//        KeyboardRow keyboardSecondRow = new KeyboardRow();
-//
-//        keyboardSecondRow.add(new KeyboardButton(buttonsList.get(1)));
-//        keyboard.add(keyboardFirstRow);
-//        keyboard.add(keyboardSecondRow);
-
-//        replyKeyboardMarkup.setKeyboard(keyboard);
 
     }
 }

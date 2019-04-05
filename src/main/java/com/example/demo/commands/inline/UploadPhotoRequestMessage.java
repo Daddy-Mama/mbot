@@ -1,9 +1,10 @@
-package com.example.demo.commands;
+package com.example.demo.commands.inline;
 
-public class UploadPhotoRequestMessage extends BaseMessage {
+import com.example.demo.commands.inline.BaseInlineMessage;
+
+public class UploadPhotoRequestMessage extends BaseInlineMessage {
     public UploadPhotoRequestMessage() {
         setInfo();
-       addMainMenuButton();
     }
 
     @Override

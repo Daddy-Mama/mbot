@@ -1,5 +1,6 @@
 package com.example.demo.commands;
 
+import com.example.demo.model.dto.MessageTransportDto;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboardMarkup;
 
@@ -23,12 +24,15 @@ public class BaseMessage {
 
     protected void setInfo(){};
 
-    public SendMessage toSendMessage(Long chatId) {
+    public MessageTransportDto toMessageTransportDto(Long chatId) {
         SendMessage sendMessage = new SendMessage();
         sendMessage.setChatId(chatId);
         sendMessage.setText(this.text);
         sendMessage.setReplyMarkup(this.replyKeyboardMarkup);
-        return sendMessage;
+
+        MessageTransportDto messageTransportDto = new MessageTransportDto();
+        messageTransportDto.setSendMessage(sendMessage);
+        return messageTransportDto;
     }
 
     protected void addMainMenuButton() {
