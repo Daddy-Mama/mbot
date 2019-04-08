@@ -10,6 +10,7 @@ public interface IBaseService {
     boolean hasCallbackQuery(String path);
     MessageTransportDto operateMessage(Update update );
     MessageTransportDto operateCallbackQuery(Update update);
+    MessageTransportDto operatePhoto(Update update);
     int getSERVICE_ID();
 
 

@@ -7,4 +7,5 @@ import org.telegram.telegrambots.meta.api.objects.Update;
 public interface ITranslatorService {
       MessageTransportDto operateMessage(Update update);
       MessageTransportDto operateCallbackQuery(Update update);
+      MessageTransportDto operatePhoto(Update update);
 }

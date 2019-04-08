@@ -38,4 +38,5 @@ public abstract class BaseService implements IBaseService {
 
     public abstract MessageTransportDto operateMessage(Update update);
     public abstract MessageTransportDto operateCallbackQuery(Update update);
+    public abstract MessageTransportDto operatePhoto(Update update);
 }

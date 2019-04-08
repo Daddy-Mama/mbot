@@ -18,6 +18,7 @@ import org.telegram.telegrambots.bots.TelegramLongPollingBot;
 import org.telegram.telegrambots.meta.api.methods.BotApiMethod;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.methods.send.SendPhoto;
+import org.telegram.telegrambots.meta.api.methods.updatingmessages.DeleteMessage;
 import org.telegram.telegrambots.meta.api.methods.updatingmessages.EditMessageText;
 import org.telegram.telegrambots.meta.api.objects.PhotoSize;
 import org.telegram.telegrambots.meta.api.objects.Update;
@@ -69,12 +70,12 @@ public class Bot extends TelegramLongPollingBot {
         if (update.hasCallbackQuery()) {
             messageTransportDto = operateCallbackQuery(update);
         }
-        if (update.hasMessage() && update.getMessage().hasText() ) {
+        if (update.hasMessage() && update.getMessage().hasText()) {
             messageTransportDto = operateMessage(update);
         }
 
-        if (update.hasMessage() && !update.getMessage().hasText() && update.getMessage().getPhoto().size()>0 ) {
-            messageTransportDto = operateMessage(update);
+        if (update.hasMessage() && !update.getMessage().hasText() && update.getMessage().getPhoto().size() > 0) {
+            messageTransportDto = operatePhoto(update);
         }
 
         try {
@@ -94,52 +95,78 @@ public class Bot extends TelegramLongPollingBot {
         return translatorService.operateMessage(update);
     }
 
+    private MessageTransportDto operatePhoto(Update update) {
+        return translatorService.operatePhoto(update);
+    }
 
     public synchronized void buildAnswer(MessageTransportDto messageTransportDto, Update update)
             throws TelegramApiException {
 
-        if(messageTransportDto==null){
-            SendMessage sendMessage = new SendMessage();
-            sendMessage.setChatId(update.getMessage().getChatId());
-            sendMessage.setText("Ответ пустой");
-        }
+        if (messageTransportDto == null) {
+            EditMessageText editMessageText = new EditMessageText();
+            editMessageText.setText("Сообщение больше не доступно");
+            messageTransportDto = new MessageTransportDto();
+            messageTransportDto.setEditMessageText(editMessageText);
+            executeEditOrDeleteMessageText(messageTransportDto, update);
 
-        if (messageTransportDto.getEditMessageText() != null) {
-            EditMessageText editMessageText = messageTransportDto.getEditMessageText();
-
-            int message_id = 0;
-            long chat_id = 0;
-            if (update.hasCallbackQuery()) {
-                message_id = update.getCallbackQuery().getMessage().getMessageId();
-                chat_id = update.getCallbackQuery().getMessage().getChatId();
-
-            } else {
-                message_id = update.getMessage().getMessageId();
-                chat_id = update.getMessage().getChatId();
+        } else {
+            if (messageTransportDto.getEditMessageText() != null) {
+                executeEditOrDeleteMessageText(messageTransportDto, update);
+            }
+            if (messageTransportDto.getSendPhoto() != null) {
+                executeSendPhoto(messageTransportDto, update);
+            }
+            if (messageTransportDto.getSendMessage() != null) {
+                executeSendMessage(messageTransportDto, update);
             }
 
+        }
+    }
+
+    private final void executeSendMessage(MessageTransportDto messageTransportDto, Update update)
+            throws TelegramApiException {
+        SendMessage sendMessage = messageTransportDto.getSendMessage();
+        sendMessage.setChatId(update.getMessage().getChatId());
+
+        execute(sendMessage);
+    }
+
+    private final void executeSendPhoto(MessageTransportDto messageTransportDto, Update update)
+            throws TelegramApiException {
+        SendPhoto sendPhoto = messageTransportDto.getSendPhoto();
+        sendPhoto.setChatId(update.getMessage().getChatId());
+
+        execute(sendPhoto);
+    }
+
+    private final void executeEditOrDeleteMessageText(MessageTransportDto messageTransportDto, Update update)
+            throws TelegramApiException {
+        EditMessageText editMessageText = messageTransportDto.getEditMessageText();
+        DeleteMessage deleteMessage = messageTransportDto.getDeleteMessage();
+        int message_id = 0;
+        long chat_id = 0;
+        if (update.hasCallbackQuery()) {
+            message_id = update.getCallbackQuery().getMessage().getMessageId();
+            chat_id = update.getCallbackQuery().getMessage().getChatId();
+
+        } else {
+            message_id = update.getMessage().getMessageId();
+            chat_id = update.getMessage().getChatId();
+        }
+
+        if (editMessageText != null) {
             editMessageText.setChatId(chat_id);
             editMessageText.setMessageId(message_id);
             execute(editMessageText);
         }
-
-        if (messageTransportDto.getSendMessage() != null) {
-
-            SendMessage sendMessage = messageTransportDto.getSendMessage();
-            sendMessage.setChatId(update.getMessage().getChatId());
-
-            execute(sendMessage);
+        if (deleteMessage != null) {
+            deleteMessage.setChatId(chat_id);
+            deleteMessage.setMessageId(message_id);
+            execute(deleteMessage);
         }
 
-        if (messageTransportDto.getSendPhoto() != null) {
 
-            SendPhoto sendPhoto = messageTransportDto.getSendPhoto();
-            sendPhoto.setChatId(update.getMessage().getChatId());
-
-            execute(sendPhoto);
-        }
     }
-
 
     /**
      * Метод возвращает имя бота, указанное при регистрации.

@@ -1,6 +1,7 @@
 package com.example.demo.service;
 
 import com.example.demo.commands.MainMenuMessage;
+import com.example.demo.commands.inline.CustomErrorMessage;
 import com.example.demo.interfaces.IMainMenuService;
 import com.example.demo.model.dto.MessageTransportDto;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,9 +31,13 @@ public class MainMenuService extends BaseService implements IMainMenuService {
 
     @Override
     public MessageTransportDto operateCallbackQuery(Update update) {
-        return null;
+        return new CustomErrorMessage("Main menu can't operate callBackQuery").toMessageTransportDto();
     }
 
+    @Override
+    public MessageTransportDto operatePhoto(Update update){
+        return new CustomErrorMessage("Main menu can't operate photo").toMessageTransportDto();
+    }
     private MessageTransportDto showMenu(Update update) {
 
         return new MainMenuMessage().toMessageTransportDto(update.getMessage().getChatId());

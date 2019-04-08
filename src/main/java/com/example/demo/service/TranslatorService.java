@@ -3,6 +3,7 @@ package com.example.demo.service;
 
 import com.example.demo.commands.Commands;
 import com.example.demo.commands.MainMenuMessage;
+import com.example.demo.commands.inline.CustomErrorMessage;
 import com.example.demo.interfaces.IBaseService;
 import com.example.demo.interfaces.ICacheService;
 import com.example.demo.interfaces.IMainMenuService;
@@ -97,12 +98,21 @@ public class TranslatorService implements ITranslatorService {
             }
         }
         return messageTransportDto;
-
-
     }
 
+    @Override
+    public MessageTransportDto operatePhoto(Update update) {
+        User user = update.getMessage().getFrom();
+        IBaseService service = getServiceForUser(user.getId());
+        if (service!=null){
+            return service.operatePhoto(update);
+        }
+        else {
+            return new CustomErrorMessage("Ошибка обработки фотографии").toMessageTransportDto();
+        }
+    }
 
-//    public synchronized SendMessage executeCommand(Update update) {
+    //    public synchronized SendMessage executeCommand(Update update) {
 //        User user = update.getMessage().getFrom();
 //        String command = parseMessage(update.getMessage().getText());
 //        logger.info("New update received: " + user.getId() + " " + user.getUserName());

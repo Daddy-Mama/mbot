@@ -25,7 +25,7 @@ public class BaseInlineMessage {
     ;
 
     public MessageTransportDto toMessageTransportDto() {
-        SendMessage sendMessage = new SendMessage();
+         SendMessage sendMessage = new SendMessage();
         sendMessage.setText(this.text);
 
         List<List<InlineKeyboardButton>> rowsInline = new ArrayList<>();

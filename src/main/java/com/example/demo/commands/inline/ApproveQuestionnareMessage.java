@@ -7,8 +7,8 @@ import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKe
 
 public class ApproveQuestionnareMessage extends BaseInlineMessage {
     public ApproveQuestionnareMessage( ) {
-
-
+        this.text = "Вот твоя анкета. Как тебе?";
+        setInfo();
     }
 
     @Override

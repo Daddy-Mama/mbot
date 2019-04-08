@@ -11,26 +11,42 @@ import java.util.stream.Collectors;
  */
 public class Questionnare {
     private User user;
-    private Integer chatId;
-    private  String answers;
-    private boolean inProgress = false;
+    private String answers;
     private String photoId;
+    private int period;
+    private int enterPrice;
+    private int status;
 
     public Questionnare(User user) {
         this.user = user;
     }
 
-    public Questionnare(User user, int chatId, String answers) {
-        this.user = user;
-        this.chatId = chatId;
-        this.answers = answers;
-    }
 
     public Questionnare() {
     }
 
-    public void setChatId(Integer chatId) {
-        this.chatId = chatId;
+    public int getStatus() {
+        return status;
+    }
+
+    public void setStatus(int status) {
+        this.status = status;
+    }
+
+    public int getPeriod() {
+        return period;
+    }
+
+    public void setPeriod(int period) {
+        this.period = period;
+    }
+
+    public int getEnterPrice() {
+        return enterPrice;
+    }
+
+    public void setEnterPrice(int enterPrice) {
+        this.enterPrice = enterPrice;
     }
 
     public String getPhotoId() {
@@ -49,32 +65,18 @@ public class Questionnare {
         this.user = user;
     }
 
-    public int getChatId() {
-        return chatId;
-    }
-
-    public void setChatId(int chatId) {
-        this.chatId = chatId;
-    }
 
     public String getAnswers() {
         return answers;
     }
 
 
-    public boolean isInProgress() {
-        return inProgress;
-    }
-
-    public void setInProgress(boolean inProgress) {
-        this.inProgress = inProgress;
-    }
-
     public void setAnswers(List<String> answers) {
 
         this.answers = answers.stream().collect(Collectors.joining("\n"));
     }
-    public boolean isFull(){
-        return answers!=null && photoId!=null && inProgress;
+
+    public boolean isFull() {
+        return answers != null && photoId != null;
     }
 }
