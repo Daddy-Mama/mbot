@@ -13,40 +13,29 @@ public class Questionnare {
     private User user;
     private String answers;
     private String photoId;
-    private int period;
-    private int enterPrice;
-    private int status;
+    private Integer period;
+    private Integer enterPrice;
+    private Integer status;
 
     public Questionnare(User user) {
         this.user = user;
     }
 
 
-    public Questionnare() {
+    public User getUser() {
+        return user;
     }
 
-    public int getStatus() {
-        return status;
+    public void setUser(User user) {
+        this.user = user;
     }
 
-    public void setStatus(int status) {
-        this.status = status;
+    public String getAnswers() {
+        return answers;
     }
 
-    public int getPeriod() {
-        return period;
-    }
-
-    public void setPeriod(int period) {
-        this.period = period;
-    }
-
-    public int getEnterPrice() {
-        return enterPrice;
-    }
-
-    public void setEnterPrice(int enterPrice) {
-        this.enterPrice = enterPrice;
+    public void setAnswers(String answers) {
+        this.answers = answers;
     }
 
     public String getPhotoId() {
@@ -57,26 +46,35 @@ public class Questionnare {
         this.photoId = photoId;
     }
 
-    public User getUser() {
-        return user;
+    public Integer getPeriod() {
+        return period;
     }
 
-    public void setUser(User user) {
-        this.user = user;
+    public void setPeriod(Integer period) {
+        this.period = period;
     }
 
-
-    public String getAnswers() {
-        return answers;
+    public Integer getEnterPrice() {
+        return enterPrice;
     }
 
+    public void setEnterPrice(Integer enterPrice) {
+        this.enterPrice = enterPrice;
+    }
+
+    public Integer getStatus() {
+        return status;
+    }
+
+    public void setStatus(Integer status) {
+        this.status = status;
+    }
 
     public void setAnswers(List<String> answers) {
-
         this.answers = answers.stream().collect(Collectors.joining("\n"));
     }
 
     public boolean isFull() {
-        return answers != null && photoId != null;
+        return answers != null && photoId != null && period !=null && enterPrice !=null && status!=null;
     }
 }

@@ -10,19 +10,15 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class BaseInlineMessage {
-
     protected String text;
     protected List<InlineKeyboardButton> buttonsList;
     protected InlineKeyboardMarkup inlineKeyboardMarkup = new InlineKeyboardMarkup();
 
     public BaseInlineMessage() {
-
         buttonsList = new ArrayList<>();
     }
 
     protected void setInfo() {}
-
-    ;
 
     public MessageTransportDto toMessageTransportDto() {
          SendMessage sendMessage = new SendMessage();

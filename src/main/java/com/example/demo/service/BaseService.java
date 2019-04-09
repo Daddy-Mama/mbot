@@ -26,7 +26,7 @@ public abstract class BaseService implements IBaseService {
     public boolean hasCommand(String command) {
         return this.allowableCommands
                 .stream()
-                .anyMatch(x -> x.toLowerCase().contains(command.toLowerCase()));
+                .anyMatch(x -> command.toLowerCase().contains(x.toLowerCase()));
     }
 
     @Override
