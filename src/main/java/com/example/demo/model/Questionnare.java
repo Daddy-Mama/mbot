@@ -77,4 +77,22 @@ public class Questionnare {
     public boolean isFull() {
         return answers != null && photoId != null && period !=null && enterPrice !=null && status!=null;
     }
+    public String getPreview(){
+        String preview ="Об участнике:\n" + this.answers + "\n\nДлительность аукциона: "+ this.period + " дня";
+        if (this.enterPrice>0){
+            preview = preview + "\nЦена участия: " + enterPrice;
+        }
+        return preview;
+    }
+    @Override
+    public String toString() {
+        return "Questionnare{" +
+                "user=" + user +
+                ", answers='" + answers + '\'' +
+                ", photoId='" + photoId + '\'' +
+                ", period=" + period +
+                ", enterPrice=" + enterPrice +
+                ", status=" + status +
+                '}';
+    }
 }

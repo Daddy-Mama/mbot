@@ -28,7 +28,7 @@ public class CacheService implements ICacheService {
     }
 
     public void addToCache(int cacheId, int userId) {
-        if (cache.get(userId) == null) {
+        if (!cache.containsKey(userId)) {
             cache.put(userId, cacheId);
         }
     }
@@ -45,7 +45,7 @@ public class CacheService implements ICacheService {
     }
 
     public void removeFromCache(int userId){
-        if (cache.contains(userId)){
+        if (cache.containsKey(userId)){
             cache.remove(userId);
         }
     }

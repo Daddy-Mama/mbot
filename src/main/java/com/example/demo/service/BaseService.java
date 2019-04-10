@@ -33,7 +33,7 @@ public abstract class BaseService implements IBaseService {
     public boolean hasCallbackQuery(String path) {
         return this.allowableCallbackQueries
                 .stream()
-                .anyMatch(x->x.contains(path));
+                .anyMatch(x->path.contains(x));
     }
 
     public abstract MessageTransportDto operateMessage(Update update);

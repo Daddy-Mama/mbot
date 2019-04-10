@@ -2,7 +2,7 @@ package com.example.demo.service;
 
 
 import com.example.demo.commands.inline.ApproveQuestionnareMessage;
-import com.example.demo.commands.inline.SaveQuestionnareRequestMessage;
+import com.example.demo.commands.inline.QuestionnareSavedMessage;
 import com.example.demo.commands.inline.SetEnterPriceRequestMessage;
 import com.example.demo.commands.inline.SetPeriodRequestMessage;
 import com.example.demo.commands.inline.UploadPhotoRequestMessage;
@@ -19,6 +19,7 @@ import com.example.demo.model.dto.MessageTransportDto;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.telegram.telegrambots.meta.api.methods.send.SendPhoto;
+import org.telegram.telegrambots.meta.api.methods.updatingmessages.EditMessageText;
 import org.telegram.telegrambots.meta.api.objects.PhotoSize;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.api.objects.User;
@@ -26,6 +27,7 @@ import org.telegram.telegrambots.meta.api.objects.User;
 import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.stream.Collectors;
 
 /**
  * Created by Артем on 28.03.2019.
@@ -71,6 +73,7 @@ public class QuastionnareService extends BaseService implements IQuestionnareSer
     @Override
     public MessageTransportDto operateCallbackQuery(Update update) {
         List<String> request = Arrays.asList(update.getCallbackQuery().getData().split("/"));
+        request = request.stream().filter(x -> !x.equals("")).collect(Collectors.toList());
         switch ("/" + request.get(0)) {
         case "/start-questionnare": {
             return askQuestion(update);
@@ -82,7 +85,7 @@ public class QuastionnareService extends BaseService implements IQuestionnareSer
             return setPeriod(update, update.getCallbackQuery().getFrom(), Integer.parseInt(request.get(1)));
         }
         case "/set-enter-price": {
-            return setEnterPrice(update,update.getCallbackQuery().getFrom(), Integer.parseInt(request.get(1)));
+            return setEnterPrice(update, update.getCallbackQuery().getFrom(), Integer.parseInt(request.get(1)));
         }
         default:
             return null;
@@ -91,12 +94,12 @@ public class QuastionnareService extends BaseService implements IQuestionnareSer
 
     private MessageTransportDto setEnterPrice(Update update, User user, int enterPrice) {
         MessageTransportDto messageTransportDto = null;
-        if (userOnStage.containsKey(user.getId())){
+        if (userOnStage.containsKey(user.getId())) {
             Questionnare questionnare = userOnStage.get(user.getId());
-            if (questionnare.getEnterPrice()==null){
+            if (questionnare.getEnterPrice() == null) {
                 questionnare.setEnterPrice(enterPrice);
                 questionnare.setStatus(4);
-                return new SaveQuestionnareRequestMessage().toMessageTransportDto();
+                return askApprove(questionnare);
             } else {
                 return new CustomErrorMessage("Ошибка: цена участия уже установлена").toMessageTransportDto();
             }
@@ -131,14 +134,12 @@ public class QuastionnareService extends BaseService implements IQuestionnareSer
 
     private MessageTransportDto saveQuestionnare(Update update, User user) {
         //save anketa to DB
-        databaseService.saveQuestionnare(userOnStage.get(user.getId()));
+        MessageTransportDto messageTransportDto = databaseService.saveQuestionnare(userOnStage.get(user.getId()));
         //clear caches
         userOnStage.remove(user.getId());
-
-
         cacheService.removeFromCache(user.getId());
 
-        return new SaveQuestionnareRequestMessage().toMessageTransportDto();
+        return messageTransportDto;
     }
 
 
@@ -178,18 +179,24 @@ public class QuastionnareService extends BaseService implements IQuestionnareSer
             messageTransportDto = new ApproveQuestionnareMessage().addBackButton("/back/rebuild-questionnare")
                                                                   .toMessageTransportDto();
             SendPhoto sendPhoto = new SendPhoto();
-            sendPhoto.setCaption(questionnare.getAnswers());
+            sendPhoto.setCaption(questionnare.getPreview());
             sendPhoto.setPhoto(questionnare.getPhotoId());
 
+            EditMessageText editMessageText = new EditMessageText();
+            editMessageText.setText(
+                    "Длительность: " + questionnare.getPeriod() + "\nЦена входа: " + questionnare.getEnterPrice());
+
+            messageTransportDto.setEditMessageText(editMessageText);
             messageTransportDto.setSendPhoto(sendPhoto);
         }
         return messageTransportDto;
     }
 
     private MessageTransportDto setPhoto(Update update, User user) {
+
         if (userOnStage.containsKey(user.getId()) && update.getMessage().hasPhoto()) {
             Questionnare questionnare = userOnStage.get(user.getId());
-            if (questionnare.getPhotoId().isEmpty()) {
+            if (questionnare.getPhotoId() == null) {
                 List<PhotoSize> photoList = update.getMessage().getPhoto();
 
                 PhotoSize photoSize = photoList.get(photoList.size() - 1);
@@ -210,7 +217,7 @@ public class QuastionnareService extends BaseService implements IQuestionnareSer
     private MessageTransportDto setAnswer(Update update, User user) {
         if (userOnStage.containsKey(user.getId()) && update.getMessage().hasText()) {
             Questionnare questionnare = userOnStage.get(user.getId());
-            if (questionnare.getAnswers().isEmpty()) {
+            if (questionnare.getAnswers() == null) {
                 List<String> answers = List.of(update.getMessage().getText().split("\n"));
                 //Ошибка если не все ответы(типо)
                 if (answers.size() < QuestionsList.questions.size()) {

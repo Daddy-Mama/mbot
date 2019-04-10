@@ -40,7 +40,8 @@ public class QuestionnareDao {
     private Integer enterPrice;
 
     @NotNull
-    @Temporal(TemporalType.DATE)
+    @Column(name = "end_time")
+//    @Temporal(TemporalType.DATE)
     private LocalDate period;
 
 

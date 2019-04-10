@@ -3,8 +3,8 @@ package com.example.demo.commands.inline;
 import com.example.demo.model.dto.MessageTransportDto;
 import org.telegram.telegrambots.meta.api.methods.updatingmessages.EditMessageText;
 
-public class SaveQuestionnareRequestMessage extends BaseInlineMessage {
-    public SaveQuestionnareRequestMessage() {
+public class QuestionnareSavedMessage extends BaseInlineMessage {
+    public QuestionnareSavedMessage() {
         this.text ="Отлично! Теперь ты - участник!)";
     }
     @Override

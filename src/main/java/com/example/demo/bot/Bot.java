@@ -43,8 +43,6 @@ public class Bot extends TelegramLongPollingBot {
     private String name;
 
 
-    @Deprecated
-    ReplyKeyboardMarkup replyKeyboardMarkup = new ReplyKeyboardMarkup();
 
 
     private final ITranslatorService translatorService;
@@ -126,7 +124,8 @@ public class Bot extends TelegramLongPollingBot {
     private final void executeSendMessage(MessageTransportDto messageTransportDto, Update update)
             throws TelegramApiException {
         SendMessage sendMessage = messageTransportDto.getSendMessage();
-        sendMessage.setChatId(update.getMessage().getChatId());
+
+        sendMessage.setChatId(getChatId(update));
 
         execute(sendMessage);
     }
@@ -134,26 +133,25 @@ public class Bot extends TelegramLongPollingBot {
     private final void executeSendPhoto(MessageTransportDto messageTransportDto, Update update)
             throws TelegramApiException {
         SendPhoto sendPhoto = messageTransportDto.getSendPhoto();
-        sendPhoto.setChatId(update.getMessage().getChatId());
+        sendPhoto.setChatId(getChatId(update));
 
         execute(sendPhoto);
     }
+
 
     private final void executeEditOrDeleteMessageText(MessageTransportDto messageTransportDto, Update update)
             throws TelegramApiException {
         EditMessageText editMessageText = messageTransportDto.getEditMessageText();
         DeleteMessage deleteMessage = messageTransportDto.getDeleteMessage();
-        int message_id = 0;
-        long chat_id = 0;
-        if (update.hasCallbackQuery()) {
-            message_id = update.getCallbackQuery().getMessage().getMessageId();
-            chat_id = update.getCallbackQuery().getMessage().getChatId();
-
-        } else {
-            message_id = update.getMessage().getMessageId();
-            chat_id = update.getMessage().getChatId();
-        }
-
+        int message_id = getMessageId(update);
+        long chat_id = getChatId(update);
+//        if (update.hasCallbackQuery()) {
+//            message_id = update.getCallbackQuery().getMessage().getMessageId();
+//            chat_id = update.getCallbackQuery().getMessage().getChatId();
+//        } else {
+//            message_id = update.getMessage().getMessageId();
+//            chat_id = update.getMessage().getChatId();
+//        }
         if (editMessageText != null) {
             editMessageText.setChatId(chat_id);
             editMessageText.setMessageId(message_id);
@@ -164,8 +162,26 @@ public class Bot extends TelegramLongPollingBot {
             deleteMessage.setMessageId(message_id);
             execute(deleteMessage);
         }
+    }
 
+    private final int getMessageId(Update update) {
+        int message_id = 0;
+        if (update.hasCallbackQuery()) {
+            message_id = update.getCallbackQuery().getMessage().getMessageId();
+        } else {
+            message_id = update.getMessage().getMessageId();
+        }
+        return message_id;
+    }
 
+    private final long getChatId(Update update) {
+        long chat_id = 0;
+        if (update.hasCallbackQuery()) {
+            chat_id = update.getCallbackQuery().getMessage().getChatId();
+        } else {
+            chat_id = update.getMessage().getChatId();
+        }
+        return chat_id;
     }
 
     /**
