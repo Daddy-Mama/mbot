@@ -41,9 +41,11 @@ public class QuestionnareDao {
 
     @NotNull
     @Column(name = "end_time")
-//    @Temporal(TemporalType.DATE)
-    private LocalDate period;
+     private LocalDate period;
 
+    @NotNull
+    @Column(name = "actual_price")
+    private Integer actualPrice;
 
     public QuestionnareDao() {
     }
@@ -53,7 +55,17 @@ public class QuestionnareDao {
         this.information = questionnare.getAnswers();
         this.photoId = questionnare.getPhotoId();
         this.enterPrice = questionnare.getEnterPrice();
-        this.period = LocalDate.now().plusDays(questionnare.getPeriod());
+        this.period = questionnare.getPeriod();
+        this.actualPrice = 0;
+    }
+
+
+    public Integer getActualPrice() {
+        return actualPrice;
+    }
+
+    public void setActualPrice(Integer actualPrice) {
+        this.actualPrice = actualPrice;
     }
 
     public Integer getEnterPrice() {

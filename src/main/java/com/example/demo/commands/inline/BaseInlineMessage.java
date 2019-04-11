@@ -1,5 +1,6 @@
 package com.example.demo.commands.inline;
 
+import com.example.demo.model.Questionnare;
 import com.example.demo.model.dto.MessageTransportDto;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
@@ -42,6 +43,10 @@ public class BaseInlineMessage {
     public BaseInlineMessage addBackButton(String link){
         buttonsList.add(new InlineKeyboardButton().setText("Back").setCallbackData(link));
         return this;
+    }
+
+    public MessageTransportDto toMessageTransportDto(Questionnare questionnare){
+        return null;
     }
 
 }

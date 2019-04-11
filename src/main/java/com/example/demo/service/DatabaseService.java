@@ -28,8 +28,16 @@ public class DatabaseService implements IDatabaseService {
             QuestionnareDao questionnareDao = new QuestionnareDao(questionnare);
             repository.saveAndFlush(questionnareDao);
             return new QuestionnareSavedMessage().toMessageTransportDto();
+        } else {
+            return new CustomErrorMessage("У тебя уже есть активные анкеты").toMessageTransportDto();
         }
-        else return new CustomErrorMessage("У тебя уже есть активные анкеты").toMessageTransportDto();
 
+    }
+
+    @Transactional
+    public MessageTransportDto findByUserName(String username) {
+        QuestionnareDao questionnareDao = repository.findByUserName(username);
+        Questionnare questionnare = new Questionnare(questionnareDao);
+        return
     }
 }

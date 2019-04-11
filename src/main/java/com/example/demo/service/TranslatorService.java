@@ -1,35 +1,22 @@
 package com.example.demo.service;
 
 
-import com.example.demo.commands.Commands;
 import com.example.demo.commands.MainMenuMessage;
 import com.example.demo.commands.inline.CustomErrorMessage;
 import com.example.demo.interfaces.IBaseService;
 import com.example.demo.interfaces.ICacheService;
 import com.example.demo.interfaces.IMainMenuService;
-import com.example.demo.interfaces.IQuestionnareService;
 import com.example.demo.interfaces.ITranslatorService;
 import com.example.demo.model.dto.MessageTransportDto;
-import org.apache.commons.io.FileUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import org.telegram.telegrambots.meta.api.methods.GetFile;
-import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
-import org.telegram.telegrambots.meta.api.methods.send.SendPhoto;
-import org.telegram.telegrambots.meta.api.objects.File;
-import org.telegram.telegrambots.meta.api.objects.Message;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.api.objects.User;
 
-import java.net.URL;
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
-import java.util.Optional;
-import java.util.stream.Collectors;
 
 @Component
 public class TranslatorService implements ITranslatorService {
@@ -60,7 +47,7 @@ public class TranslatorService implements ITranslatorService {
         IBaseService service = getServiceForUser(user.getId());
 
         //user is in cache
-        //it means that received message but NOT COMMAND from user
+        //it means that message is received  but NOT COMMAND
         if (service != null) {
             return registeredUserMessage(service, update);
         }
@@ -73,10 +60,6 @@ public class TranslatorService implements ITranslatorService {
                 }
             }
         }
-//        //user sent command and he does't exist in cache
-//        if (service != null) {
-//            return commandFromUserMessage(service, update);
-//        }
         return errorMessage(update);
     }
 
@@ -112,35 +95,6 @@ public class TranslatorService implements ITranslatorService {
         }
     }
 
-    //    public synchronized SendMessage executeCommand(Update update) {
-//        User user = update.getMessage().getFrom();
-//        String command = parseMessage(update.getMessage().getText());
-//        logger.info("New update received: " + user.getId() + " " + user.getUserName());
-//        BaseService service = getServiceForUser(user.getId());
-//        //user is in cache
-//        if (service != null) {
-//            return registeredUserMessage(service, update);
-//        }
-//        if (command != null) {
-//            for (BaseService baseService : baseServiceMap.values()) {
-//                if (baseService.hasCommand(command)) {
-//                    service = baseService;
-//                    break;
-//                }
-//            }
-//        }
-//        //user sent command and he does't exist in cache
-//        if (service != null) {
-//            return commandFromUserMessage(service, update);
-//        }
-//
-//
-//        return errorMessage(update);
-//    }
-
-    private MessageTransportDto commandFromUserMessage(IBaseService service, Update update) {
-        return service.operateMessage(update);
-    }
 
     private MessageTransportDto registeredUserMessage(IBaseService service, Update update) {
         MessageTransportDto answer = service.operateMessage(update);
@@ -148,7 +102,6 @@ public class TranslatorService implements ITranslatorService {
     }
 
     private MessageTransportDto errorMessage(Update update) {
-
         return new MainMenuMessage(
                 "Что-то странное.. Может ты предыдущую сессию не закончил:( Верну тебя в меню").toMessageTransportDto(
                 update.getMessage().getChatId());

@@ -6,17 +6,16 @@ import org.telegram.telegrambots.meta.api.methods.send.SendPhoto;
 import org.telegram.telegrambots.meta.api.methods.updatingmessages.EditMessageText;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKeyboardButton;
 
-public class ApproveQuestionnareMessage extends BaseInlineMessage {
-
-    public ApproveQuestionnareMessage() {
-        this.text = "Вот твоя анкета. Как тебе?";
-        setInfo();
+public class ShowQuestionnareMessage extends BaseInlineMessage {
+    public ShowQuestionnareMessage() {
+        this.text = "Анкета участника";
     }
 
     @Override
     protected void setInfo() {
-        buttonsList.add(new InlineKeyboardButton().setText("Анкета норм. Save").setCallbackData("/save-questionnare"));
+        buttonsList.add(new InlineKeyboardButton().setText("Учавствовать").setCallbackData("/participate"));
     }
+
 
     @Override
     public MessageTransportDto toMessageTransportDto(Questionnare questionnare) {
@@ -27,7 +26,7 @@ public class ApproveQuestionnareMessage extends BaseInlineMessage {
 
         EditMessageText editMessageText = new EditMessageText();
         editMessageText.setText(
-                "Длительность: " + questionnare.getPeriod() + "\nЦена входа: " + questionnare.getEnterPrice());
+                "Длительность: " + questionnare.getPeriod() + "\nЦена входа: " + questionnare.getEnterPrice() + "\n");
 
         messageTransportDto.setEditMessageText(editMessageText);
         messageTransportDto.setSendPhoto(sendPhoto);

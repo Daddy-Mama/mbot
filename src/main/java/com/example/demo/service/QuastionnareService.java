@@ -24,6 +24,7 @@ import org.telegram.telegrambots.meta.api.objects.PhotoSize;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.api.objects.User;
 
+import java.time.LocalDate;
 import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
@@ -98,8 +99,7 @@ public class QuastionnareService extends BaseService implements IQuestionnareSer
             Questionnare questionnare = userOnStage.get(user.getId());
             if (questionnare.getEnterPrice() == null) {
                 questionnare.setEnterPrice(enterPrice);
-                questionnare.setStatus(4);
-                return askApprove(questionnare);
+                 return askApprove(questionnare);
             } else {
                 return new CustomErrorMessage("Ошибка: цена участия уже установлена").toMessageTransportDto();
             }
@@ -112,9 +112,8 @@ public class QuastionnareService extends BaseService implements IQuestionnareSer
         if (userOnStage.containsKey(user.getId())) {
             Questionnare questionnare = userOnStage.get(user.getId());
             if (questionnare.getPeriod() == null) {
-                questionnare.setPeriod(period);
-                questionnare.setStatus(3);
-                return new SetEnterPriceRequestMessage().toMessageTransportDto();
+                questionnare.setPeriod(LocalDate.now().plusDays(period));
+                 return new SetEnterPriceRequestMessage().toMessageTransportDto();
             } else {
                 return new CustomErrorMessage("Ошибка: период уже установлен").toMessageTransportDto();
             }
@@ -177,17 +176,7 @@ public class QuastionnareService extends BaseService implements IQuestionnareSer
         MessageTransportDto messageTransportDto = null;
         if (questionnare.isFull()) {
             messageTransportDto = new ApproveQuestionnareMessage().addBackButton("/back/rebuild-questionnare")
-                                                                  .toMessageTransportDto();
-            SendPhoto sendPhoto = new SendPhoto();
-            sendPhoto.setCaption(questionnare.getPreview());
-            sendPhoto.setPhoto(questionnare.getPhotoId());
-
-            EditMessageText editMessageText = new EditMessageText();
-            editMessageText.setText(
-                    "Длительность: " + questionnare.getPeriod() + "\nЦена входа: " + questionnare.getEnterPrice());
-
-            messageTransportDto.setEditMessageText(editMessageText);
-            messageTransportDto.setSendPhoto(sendPhoto);
+                                                                  .toMessageTransportDto(questionnare);
         }
         return messageTransportDto;
     }
@@ -202,8 +191,7 @@ public class QuastionnareService extends BaseService implements IQuestionnareSer
                 PhotoSize photoSize = photoList.get(photoList.size() - 1);
 //                    if (questionnare.getPhotoId() == null && !questionnare.getAnswers().isEmpty()) {
                 questionnare.setPhotoId(photoSize.getFileId());
-                questionnare.setStatus(2);
-                userOnStage.replace(update.getMessage().getFrom().getId(), questionnare);
+                 userOnStage.replace(update.getMessage().getFrom().getId(), questionnare);
                 return new SetPeriodRequestMessage().toMessageTransportDto();
 //                    }
             } else {
@@ -225,7 +213,6 @@ public class QuastionnareService extends BaseService implements IQuestionnareSer
                 }
 
                 questionnare.setAnswers(answers);
-                questionnare.setStatus(1);
 
                 userOnStage.replace(update.getMessage().getFrom().getId(), questionnare);
 
@@ -245,7 +232,6 @@ public class QuastionnareService extends BaseService implements IQuestionnareSer
             userOnStage.remove(user.getId());
         } else {
             Questionnare questionnare = new Questionnare(user);
-            questionnare.setStatus(0);
             userOnStage.put(user.getId(), questionnare);
         }
         //message with questions
