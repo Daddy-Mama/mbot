@@ -21,24 +21,24 @@ public class SetEnterPriceRequestMessage extends BaseInlineMessage {
         buttonsList.add(new InlineKeyboardButton().setText("100 грн").setCallbackData("/set-enter-price/100"));
     }
 
-    @Override
-    public MessageTransportDto toMessageTransportDto() {
-        EditMessageText editMessageText = new EditMessageText();
-        editMessageText.setText(this.text);
-
-        List<List<InlineKeyboardButton>> rowsInline = new ArrayList<>();
-        for (InlineKeyboardButton button : buttonsList) {
-            List<InlineKeyboardButton> rowInline = new ArrayList<>();
-            rowInline.add(button);
-            rowsInline.add(rowInline);
-        }
-
-        inlineKeyboardMarkup.setKeyboard(rowsInline);
-        editMessageText.setReplyMarkup(inlineKeyboardMarkup);
-
-        MessageTransportDto messageTransportDto = new MessageTransportDto();
-        messageTransportDto.setEditMessageText(editMessageText);
-        return messageTransportDto;
-
-    }
+//    @Override
+//    public MessageTransportDto toMessageTransportDto() {
+//        EditMessageText editMessageText = new EditMessageText();
+//        editMessageText.setText(this.text);
+//
+//        List<List<InlineKeyboardButton>> rowsInline = new ArrayList<>();
+//        for (InlineKeyboardButton button : buttonsList) {
+//            List<InlineKeyboardButton> rowInline = new ArrayList<>();
+//            rowInline.add(button);
+//            rowsInline.add(rowInline);
+//        }
+//
+//        inlineKeyboardMarkup.setKeyboard(rowsInline);
+//        editMessageText.setReplyMarkup(inlineKeyboardMarkup);
+//
+//        MessageTransportDto messageTransportDto = new MessageTransportDto();
+//        messageTransportDto.setEditMessageText(editMessageText);
+//        return messageTransportDto;
+//
+//    }
 }

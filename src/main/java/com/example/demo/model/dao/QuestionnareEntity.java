@@ -17,7 +17,7 @@ import java.util.stream.Collectors;
 
 @Entity
 @Table(name = "questionnare")
-public class QuestionnareDao {
+public class QuestionnareEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -39,34 +39,19 @@ public class QuestionnareDao {
     @Column(name = "enter_price")
     private Integer enterPrice;
 
-    @NotNull
-    @Column(name = "end_time")
-     private LocalDate period;
 
-    @NotNull
-    @Column(name = "actual_price")
-    private Integer actualPrice;
-
-    public QuestionnareDao() {
+    public QuestionnareEntity() {
     }
 
-    public QuestionnareDao(Questionnare questionnare) {
+    public QuestionnareEntity(Questionnare questionnare) {
         this.userName = questionnare.getUser().getUserName();
         this.information = questionnare.getAnswers();
         this.photoId = questionnare.getPhotoId();
         this.enterPrice = questionnare.getEnterPrice();
-        this.period = questionnare.getPeriod();
-        this.actualPrice = 0;
-    }
+     }
 
 
-    public Integer getActualPrice() {
-        return actualPrice;
-    }
 
-    public void setActualPrice(Integer actualPrice) {
-        this.actualPrice = actualPrice;
-    }
 
     public Integer getEnterPrice() {
         return enterPrice;
@@ -76,13 +61,6 @@ public class QuestionnareDao {
         this.enterPrice = enterPrice;
     }
 
-    public LocalDate getPeriod() {
-        return period;
-    }
-
-    public void setPeriod(LocalDate period) {
-        this.period = period;
-    }
 
     public String getPhotoId() {
         return photoId;

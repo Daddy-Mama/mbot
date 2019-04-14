@@ -8,4 +8,5 @@ public interface ITranslatorService {
       MessageTransportDto operateMessage(Update update);
       MessageTransportDto operateCallbackQuery(Update update);
       MessageTransportDto operatePhoto(Update update);
+      MessageTransportDto operatePayment(Update update);
 }

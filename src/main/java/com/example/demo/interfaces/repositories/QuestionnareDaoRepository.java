@@ -1,11 +1,10 @@
 package com.example.demo.interfaces.repositories;
 
-import com.example.demo.model.dao.QuestionnareDao;
+import com.example.demo.model.dao.QuestionnareEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public interface QuestionnareDaoRepository extends JpaRepository<QuestionnareDao,Long> {
-    QuestionnareDao findByUserName(String name);
+public interface QuestionnareDaoRepository extends JpaRepository<QuestionnareEntity,Long> {
+    QuestionnareEntity findByUserName(String name);
 }

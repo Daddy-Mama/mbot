@@ -1,5 +1,7 @@
 package com.example.demo.model.dto;
 
+import org.telegram.telegrambots.meta.api.methods.AnswerPreCheckoutQuery;
+import org.telegram.telegrambots.meta.api.methods.send.SendInvoice;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.methods.send.SendPhoto;
 import org.telegram.telegrambots.meta.api.methods.updatingmessages.DeleteMessage;
@@ -10,7 +12,26 @@ public class MessageTransportDto {
     private SendPhoto sendPhoto;
     private EditMessageText editMessageText;
     private DeleteMessage deleteMessage;
+    private SendInvoice sendInvoice;
+    private AnswerPreCheckoutQuery answerPreCheckoutQuery;
+    private  NotificationMessage notificationMessage;
     public MessageTransportDto() {
+    }
+
+    public AnswerPreCheckoutQuery getAnswerPreCheckoutQuery() {
+        return answerPreCheckoutQuery;
+    }
+
+    public void setAnswerPreCheckoutQuery(AnswerPreCheckoutQuery answerPreCheckoutQuery) {
+        this.answerPreCheckoutQuery = answerPreCheckoutQuery;
+    }
+
+    public NotificationMessage getNotificationMessage() {
+        return notificationMessage;
+    }
+
+    public void setNotificationMessage(NotificationMessage notificationMessage) {
+        this.notificationMessage = notificationMessage;
     }
 
     public DeleteMessage getDeleteMessage() {
@@ -19,6 +40,14 @@ public class MessageTransportDto {
 
     public void setDeleteMessage(DeleteMessage deleteMessage) {
         this.deleteMessage = deleteMessage;
+    }
+
+    public SendInvoice getSendInvoice() {
+        return sendInvoice;
+    }
+
+    public void setSendInvoice(SendInvoice sendInvoice) {
+        this.sendInvoice = sendInvoice;
     }
 
     public SendMessage getSendMessage() {

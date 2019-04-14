@@ -3,10 +3,7 @@ package com.example.demo.service;
 
 import com.example.demo.commands.MainMenuMessage;
 import com.example.demo.commands.inline.CustomErrorMessage;
-import com.example.demo.interfaces.IBaseService;
-import com.example.demo.interfaces.ICacheService;
-import com.example.demo.interfaces.IMainMenuService;
-import com.example.demo.interfaces.ITranslatorService;
+import com.example.demo.interfaces.*;
 import com.example.demo.model.dto.MessageTransportDto;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -23,19 +20,22 @@ public class TranslatorService implements ITranslatorService {
     private final static Logger logger = LogManager.getLogger();
 
     private final ICacheService cacheService;
-    private final IMainMenuService menuService;
-    private final Map<Integer, IBaseService> baseServiceMap;
 
+    private final Map<Integer, IBaseService> baseServiceMap;
+    @Autowired
+    private   IPaymentService paymentService;
 
     @Autowired
     public TranslatorService(CacheService cacheService,
                              MainMenuService mainMenuService,
-                             QuastionnareService quastionnareService) {
-        this.menuService = mainMenuService;
+                             QuastionnareService quastionnareService,
+                             SearchService searchService) {
+
         this.cacheService = cacheService;
         baseServiceMap = new HashMap<>();
-        baseServiceMap.put(menuService.getSERVICE_ID(), menuService);
+        baseServiceMap.put(mainMenuService.getSERVICE_ID(), mainMenuService);
         baseServiceMap.put(quastionnareService.getSERVICE_ID(), quastionnareService);
+        baseServiceMap.put(searchService.getSERVICE_ID(),searchService);
     }
 
 
@@ -66,8 +66,8 @@ public class TranslatorService implements ITranslatorService {
 
     public MessageTransportDto operateCallbackQuery(Update update) {
         String call_data = update.getCallbackQuery().getData();
-        long message_id = update.getCallbackQuery().getMessage().getMessageId();
-        long chat_id = update.getCallbackQuery().getMessage().getChatId();
+//        long message_id = update.getCallbackQuery().getMessage().getMessageId();
+//        long chat_id = update.getCallbackQuery().getMessage().getChatId();
         MessageTransportDto messageTransportDto = null;
         IBaseService service;
 
@@ -95,6 +95,9 @@ public class TranslatorService implements ITranslatorService {
         }
     }
 
+    public MessageTransportDto operatePayment(Update update){
+       return paymentService.onSuccessPayment(update);
+    }
 
     private MessageTransportDto registeredUserMessage(IBaseService service, Update update) {
         MessageTransportDto answer = service.operateMessage(update);

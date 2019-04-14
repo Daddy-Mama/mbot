@@ -73,23 +73,24 @@ public class QuastionnareService extends BaseService implements IQuestionnareSer
 
     @Override
     public MessageTransportDto operateCallbackQuery(Update update) {
+        MessageTransportDto messageTransportDto = super.operateCallbackQuery(update);
+        if (messageTransportDto != null) return messageTransportDto;
+
         List<String> request = Arrays.asList(update.getCallbackQuery().getData().split("/"));
         request = request.stream().filter(x -> !x.equals("")).collect(Collectors.toList());
         switch ("/" + request.get(0)) {
-        case "/start-questionnare": {
-            return askQuestion(update);
-        }
-        case "/save-questionnare": {
-            return saveQuestionnare(update, update.getCallbackQuery().getFrom());
-        }
-        case "/set-period": {
-            return setPeriod(update, update.getCallbackQuery().getFrom(), Integer.parseInt(request.get(1)));
-        }
-        case "/set-enter-price": {
-            return setEnterPrice(update, update.getCallbackQuery().getFrom(), Integer.parseInt(request.get(1)));
-        }
-        default:
-            return null;
+            case "/start-questionnare": {
+                return askQuestion(update);
+            }
+            case "/save-questionnare": {
+                return saveQuestionnare(update, update.getCallbackQuery().getFrom(),update.getCallbackQuery().getMessage().getChatId());
+            }
+
+            case "/set-enter-price": {
+                return setEnterPrice(update, update.getCallbackQuery().getFrom(), Integer.parseInt(request.get(1)));
+            }
+            default:
+                return null;
         }
     }
 
@@ -99,7 +100,7 @@ public class QuastionnareService extends BaseService implements IQuestionnareSer
             Questionnare questionnare = userOnStage.get(user.getId());
             if (questionnare.getEnterPrice() == null) {
                 questionnare.setEnterPrice(enterPrice);
-                 return askApprove(questionnare);
+                return askApprove(questionnare);
             } else {
                 return new CustomErrorMessage("Ошибка: цена участия уже установлена").toMessageTransportDto();
             }
@@ -107,19 +108,6 @@ public class QuastionnareService extends BaseService implements IQuestionnareSer
         return null;
     }
 
-    private MessageTransportDto setPeriod(Update update, User user, int period) {
-        MessageTransportDto messageTransportDto = null;
-        if (userOnStage.containsKey(user.getId())) {
-            Questionnare questionnare = userOnStage.get(user.getId());
-            if (questionnare.getPeriod() == null) {
-                questionnare.setPeriod(LocalDate.now().plusDays(period));
-                 return new SetEnterPriceRequestMessage().toMessageTransportDto();
-            } else {
-                return new CustomErrorMessage("Ошибка: период уже установлен").toMessageTransportDto();
-            }
-        }
-        return null;
-    }
 
     @Override
     public MessageTransportDto operatePhoto(Update update) {
@@ -131,9 +119,9 @@ public class QuastionnareService extends BaseService implements IQuestionnareSer
 
     }
 
-    private MessageTransportDto saveQuestionnare(Update update, User user) {
+    private MessageTransportDto saveQuestionnare(Update update, User user, Long chatId) {
         //save anketa to DB
-        MessageTransportDto messageTransportDto = databaseService.saveQuestionnare(userOnStage.get(user.getId()));
+        MessageTransportDto messageTransportDto = databaseService.saveQuestionnare(userOnStage.get(user.getId()),chatId);
         //clear caches
         userOnStage.remove(user.getId());
         cacheService.removeFromCache(user.getId());
@@ -142,41 +130,11 @@ public class QuastionnareService extends BaseService implements IQuestionnareSer
     }
 
 
-//    private MessageTransportDto buildQuestionnare(Update update, User user) {
-//        MessageTransportDto messageTransportDto = null;
-//        if (userOnStage.containsKey(user.getId())) {
-//            Questionnare questionnare = userOnStage.get(user.getId());
-//            switch (questionnare.getStatus()) {
-//            case 0: {
-//                messageTransportDto = setAnswer(questionnare, update);
-//                if (messageTransportDto != null) {
-//                    return messageTransportDto;
-//                }
-//                //Return request to upload photo
-//                return new UploadPhotoRequestMessage().toMessageTransportDto();
-//            }
-//            case 1: {
-//                messageTransportDto = setPhoto(questionnare, update);
-//                if (messageTransportDto != null) {
-//                    return messageTransportDto;
-//                }
-//                return new SetPeriodRequestMessage().toMessageTransportDto();
-//                //                return askApprove(questionnare);
-//            }
-////            case 2: {
-////                messageTransportDto = setPeriod(questionnare, update);
-////            }
-//            }
-//        }
-//        return null;
-//    }
-
-
     private MessageTransportDto askApprove(Questionnare questionnare) {
         MessageTransportDto messageTransportDto = null;
         if (questionnare.isFull()) {
             messageTransportDto = new ApproveQuestionnareMessage().addBackButton("/back/rebuild-questionnare")
-                                                                  .toMessageTransportDto(questionnare);
+                    .toMessageTransportDto(questionnare);
         }
         return messageTransportDto;
     }
@@ -191,8 +149,8 @@ public class QuastionnareService extends BaseService implements IQuestionnareSer
                 PhotoSize photoSize = photoList.get(photoList.size() - 1);
 //                    if (questionnare.getPhotoId() == null && !questionnare.getAnswers().isEmpty()) {
                 questionnare.setPhotoId(photoSize.getFileId());
-                 userOnStage.replace(update.getMessage().getFrom().getId(), questionnare);
-                return new SetPeriodRequestMessage().toMessageTransportDto();
+                userOnStage.replace(update.getMessage().getFrom().getId(), questionnare);
+                return new SetEnterPriceRequestMessage().toMessageTransportDto();
 //                    }
             } else {
                 return new CustomErrorMessage("Ошибка: фото анкеты уже установлено").toMessageTransportDto();

@@ -27,7 +27,7 @@ public class ApproveQuestionnareMessage extends BaseInlineMessage {
 
         EditMessageText editMessageText = new EditMessageText();
         editMessageText.setText(
-                "Длительность: " + questionnare.getPeriod() + "\nЦена входа: " + questionnare.getEnterPrice());
+                  "\nЦена: " + questionnare.getEnterPrice());
 
         messageTransportDto.setEditMessageText(editMessageText);
         messageTransportDto.setSendPhoto(sendPhoto);

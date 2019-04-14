@@ -7,28 +7,21 @@ import org.telegram.telegrambots.meta.api.methods.updatingmessages.EditMessageTe
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKeyboardButton;
 
 public class ShowQuestionnareMessage extends BaseInlineMessage {
-    public ShowQuestionnareMessage() {
-        this.text = "Анкета участника";
+    public ShowQuestionnareMessage(String username) {
+        buttonsList.add(new InlineKeyboardButton().setText("Купить свидание").setCallbackData("/buy-date/"+username));
     }
 
-    @Override
-    protected void setInfo() {
-        buttonsList.add(new InlineKeyboardButton().setText("Учавствовать").setCallbackData("/participate"));
-    }
+
 
 
     @Override
     public MessageTransportDto toMessageTransportDto(Questionnare questionnare) {
         MessageTransportDto messageTransportDto = super.toMessageTransportDto();
+
         SendPhoto sendPhoto = new SendPhoto();
         sendPhoto.setCaption(questionnare.getPreview());
         sendPhoto.setPhoto(questionnare.getPhotoId());
 
-        EditMessageText editMessageText = new EditMessageText();
-        editMessageText.setText(
-                "Длительность: " + questionnare.getPeriod() + "\nЦена входа: " + questionnare.getEnterPrice() + "\n");
-
-        messageTransportDto.setEditMessageText(editMessageText);
         messageTransportDto.setSendPhoto(sendPhoto);
         return messageTransportDto;
     }
