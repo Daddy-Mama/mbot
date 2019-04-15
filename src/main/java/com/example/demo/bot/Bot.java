@@ -66,8 +66,7 @@ public class Bot extends TelegramLongPollingBot {
     @Override
     public void onUpdateReceived(Update update) {
         logger.info("===============================================================================================");
-        user2Repository.findAll();
-        user2Repository.save(new User2Entity((long) 12));
+
         MessageTransportDto messageTransportDto = new MessageTransportDto();
         if (update.hasCallbackQuery()) {
             messageTransportDto = operateCallbackQuery(update);
