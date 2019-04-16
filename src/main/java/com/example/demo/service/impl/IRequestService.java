@@ -7,4 +7,5 @@ public interface IRequestService {
     MessageTransportDto operatePayment(Update update);
     MessageTransportDto operateCallbackQuery(Update update);
     MessageTransportDto operateMessage(Update update);
+
 }
