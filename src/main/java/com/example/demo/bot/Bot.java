@@ -1,11 +1,8 @@
 package com.example.demo.bot;
 
 
-import com.example.demo.interfaces.ITranslatorService;
-import com.example.demo.interfaces.IMainMenuService;
-import com.example.demo.interfaces.repositories.User2Repository;
-import com.example.demo.model.dao.User2Entity;
 import com.example.demo.model.dto.MessageTransportDto;
+import com.example.demo.service.impl.IRequestService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectWriter;
 import com.google.gson.Gson;
@@ -45,14 +42,11 @@ public class Bot extends TelegramLongPollingBot {
     private String token;
     @Value("${telegram.username}")
     private String name;
+    @Autowired
+    private IRequestService requestService;
 
     @Autowired
-    private User2Repository user2Repository;
-    private final ITranslatorService translatorService;
-
-    @Autowired
-    public Bot(ITranslatorService translatorService) {
-        this.translatorService = translatorService;
+    public Bot() {
     }
 
 
@@ -71,16 +65,16 @@ public class Bot extends TelegramLongPollingBot {
         if (update.hasCallbackQuery()) {
             messageTransportDto = operateCallbackQuery(update);
         }
+
         if (update.hasMessage() && update.getMessage().hasText()) {
-            messageTransportDto = operateMessage(update);
+            if (update.getMessage().hasSuccessfulPayment()) {
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+            } else {
+                messageTransportDto = operateMessage(update);
+            }
         }
 
-        if (update.hasMessage() && !update.getMessage().hasText() && update.getMessage().getPhoto().size() > 0) {
-            if (update.getMessage().hasSuccessfulPayment()) {
-                messageTransportDto = translatorService.operatePayment(update);
-            } else
-                messageTransportDto = operatePhoto(update);
-        }
+
         if (update.hasPreCheckoutQuery()) {
             messageTransportDto = operatePreChecoutQuery(update);
         }
@@ -96,7 +90,7 @@ public class Bot extends TelegramLongPollingBot {
     }
 
     private MessageTransportDto operateCallbackQuery(Update update) {
-        return translatorService.operateCallbackQuery(update);
+        return requestService.operateCallbackQuery(update);
     }
 
     private MessageTransportDto operatePreChecoutQuery(Update update) {
@@ -110,12 +104,12 @@ public class Bot extends TelegramLongPollingBot {
     }
 
     private MessageTransportDto operateMessage(Update update) {
-        return translatorService.operateMessage(update);
+        return requestService.operateMessage(update);
     }
 
-    private MessageTransportDto operatePhoto(Update update) {
-        return translatorService.operatePhoto(update);
-    }
+//    private MessageTransportDto operatePhoto(Update update) {
+//        return translatorService.operatePhoto(update);
+//    }
 
     public synchronized void buildAnswer(MessageTransportDto messageTransportDto, Update update)
             throws TelegramApiException {
