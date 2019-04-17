@@ -1,4 +1,4 @@
-package com.example.demo.model.dto;
+package com.example.demo.model.message;
 
 import org.telegram.telegrambots.meta.api.methods.AnswerPreCheckoutQuery;
 import org.telegram.telegrambots.meta.api.methods.send.SendInvoice;
